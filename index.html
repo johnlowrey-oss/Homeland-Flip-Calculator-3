@@ -623,106 +623,98 @@
 
             <!-- Tab Content -->
             <div class="tab-content">
-
                 <!-- ===== Tab Pane: Deal Calculator ===== -->
                 <div id="deal-calculator" class="tab-pane active">
                     <div class="grid-container">
-                        
-                        <!-- Column 1: Core Numbers -->
-                        <div>
-                            <div class="input-group mb-4">
-                                <label for="purchase-price" class="label">Purchase Price</label>
-                                <input type="text" id="purchase-price" class="input" placeholder="e.g., 250,000" oninput="formatCurrency(this)">
+                        <!-- Left Column: Inputs -->
+                        <div class="space-y-6">
+                            <!-- Core Numbers -->
+                            <div class="result-box">
+                                <h3 class="result-box-title">Core Numbers</h3>
+                                <div class="input-group">
+                                    <label for="purchase-price" class="label">Purchase Price</label>
+                                    <input type="text" id="purchase-price" class="input" placeholder="e.g., 250,000" oninput="formatCurrency(this)">
+                                </div>
+                                <div class="input-group">
+                                    <label for="arv" class="label">After Repair Value (ARV)</label>
+                                    <div class="flex">
+                                        <input type="text" id="arv" class="input rounded-r-none" placeholder="e.g., 400,000" oninput="formatCurrency(this)">
+                                        <button id="arv-comps-btn" class="btn btn-secondary rounded-l-none whitespace-nowrap">
+                                            ✨ Comps
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label for="rehab-costs" class="label">Rehab Costs</label>
+                                    <div class="flex">
+                                        <input type="text" id="rehab-costs" class="input rounded-r-none" placeholder="e.g., 50,000" oninput="formatCurrency(this)">
+                                        <button id="rehab-breakdown-btn" class="btn btn-secondary rounded-l-none whitespace-nowrap">
+                                            Tools
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="input-group mb-4">
-                                <label for="arv" class="label">After Repair Value (ARV)</label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="arv" class="input" placeholder="e.g., 400,000" oninput="formatCurrency(this)">
-                                    <button id="arv-comps-btn" class="btn btn-secondary whitespace-nowrap">
-                                        <span>✨ Comps Calculator</span>
-                                    </button>
+                            <!-- Financing -->
+                            <div class="result-box">
+                                <h3 class="result-box-title">Financing (Optional)</h3>
+                                <div class="input-group">
+                                    <label for="financing-type" class="label">Financing Type</label>
+                                    <select id="financing-type" class="select">
+                                        <option value="cash">All Cash</option>
+                                        <option value="loan">Loan</option>
+                                    </select>
+                                </div>
+                                <div id="loan-inputs-container" class="space-y-4 pt-4" style="display: none;">
+                                    <div class="input-group">
+                                        <label for="down-payment-percent" class="label">Down Payment (%)</label>
+                                        <input type="number" id="down-payment-percent" class="input" placeholder="e.g., 20">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="interest-rate" class="label">Interest Rate (%)</label>
+                                        <input type="number" id="interest-rate" class="input" placeholder="e.g., 7.5">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="loan-points" class="label">Loan Points (%)</label>
+                                        <input type="number" id="loan-points" class="input" placeholder="e.g., 2">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="other-closing-costs" class="label">Other Closing Costs ($)</label>
+                                        <input type="text" id="other-closing-costs" class="input" placeholder="e.g., 3,000" oninput="formatCurrency(this)">
+                                    </div>
                                 </div>
                             </div>
                             
-                            <div class="input-group mb-4">
-                                <label for="rehab-costs" class="label">Total Rehab Costs</label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="rehab-costs" class="input" placeholder="e.g., 50,000" oninput="formatCurrency(this)">
-                                    <button id="rehab-breakdown-btn" class="btn btn-secondary whitespace-nowrap">
-                                        <span>AI Breakdown</span>
-                                    </button>
+                            <!-- Holding & Selling Costs -->
+                            <div class="result-box">
+                                <h3 class="result-box-title">Holding & Selling Costs</h3>
+                                <div class="input-group">
+                                    <label for="holding-months" class="label">Project Length (Months)</label>
+                                    <input type="number" id="holding-months" class="input" placeholder="e.g., 6">
                                 </div>
-                            </div>
-
-                            <div class="input-group mb-4">
-                                <label for="financing-type" class="label">Financing Type</label>
-                                <select id="financing-type" class="select">
-                                    <option value="cash">All Cash</option>
-                                    <option value="loan">Hard Money / Loan</option>
-                                </select>
-                            </div>
-
-                            <!-- Hidden Loan Inputs -->
-                            <div id="loan-inputs-container" style="display: none;" class="ml-4 pl-4 border-l-2 border-cyan-500">
-                                <div class="input-group mb-4">
-                                    <label for="down-payment-percent" class="label">Down Payment (%)</label>
-                                    <div class="input-addon">
-                                        <input type="number" id="down-payment-percent" class="input" value="20">
-                                        <span class="addon">%</span>
-                                    </div>
+                                <div class="input-group">
+                                    <label for="monthly-holding-costs" class="label">Monthly Holding Costs ($)</label>
+                                    <input type="text" id="monthly-holding-costs" class="input" placeholder="e.g., 1,000" oninput="formatCurrency(this)">
                                 </div>
-                                <div class="input-group mb-4">
-                                    <label for="interest-rate" class="label">Interest Rate (%)</label>
-                                    <div class="input-addon">
-                                        <input type="number" id="interest-rate" class="input" value="10">
-                                        <span class="addon">%</span>
-                                    </div>
+                                <div class="input-group">
+                                    <label for="selling-costs-percent" class="label">Selling Costs (%)</label>
+                                    <input type="number" id="selling-costs-percent" class="input" placeholder="e.g., 6">
                                 </div>
-                                <div class="input-group mb-4">
-                                    <label for="loan-points" class="label">Loan Points (%)</label>
-                                    <div class="input-addon">
-                                        <input type="number" id="loan-points" class="input" value="2">
-                                        <span class="addon">%</span>
-                                    </div>
+                                <div class="input-group">
+                                    <label for="selling-costs-flat" class="label">Selling Costs (Flat $)</label>
+                                    <input type="text" id="selling-costs-flat" class="input" placeholder="e.g., 1,500" oninput="formatCurrency(this)">
                                 </div>
-                                <div class="input-group mb-4">
-                                    <label for="other-closing-costs" class="label">Other Loan/Closing Costs ($)</label>
-                                    <input type="text" id="other-closing-costs" class="input" placeholder="e.g., 3,000" oninput="formatCurrency(this)">
-                                </div>
-                            </div>
-
-                            <div class="input-group mb-4">
-                                <label for="holding-months" class="label">Holding Period (Months)</label>
-                                <input type="number" id="holding-months" class="input" value="6" placeholder="e.g., 6">
-                            </div>
-
-                            <div class="input-group mb-4">
-                                <label for="monthly-holding-costs" class="label">Monthly Holding Costs (Taxes, Utilities)</label>
-                                <input type="text" id="monthly-holding-costs" class="input" placeholder="e.g., 500" oninput="formatCurrency(this)">
-                            </div>
-                            
-                            <div class="input-group mb-4">
-                                <label for="selling-costs-percent" class="label">Selling Costs (Agent, Closing) (%)</label>
-                                <div class="input-addon">
-                                    <input type="number" id="selling-costs-percent" class="input" value="6">
-                                    <span class="addon">%</span>
-                                </div>
-                            </div>
-                            
-                            <div class="input-group mb-4">
-                                <label for="selling-costs-flat" class="label">Other Selling Costs (Flat Fee)</label>
-                                <input type="text" id="selling-costs-flat" class="input" placeholder="e.g., 1,000" oninput="formatCurrency(this)">
                             </div>
                         </div>
 
-                        <!-- Column 2: Results -->
-                        <div id="results-container" style="display: none;">
-                            <h3 class="section-title">Deal Analysis</h3>
-                            
-                            <!-- Key Metrics -->
-                            <div class="result-box mb-4">
-                                <h4 class="result-box-title">Key Metrics</h4>
+                        <!-- Right Column: Results -->
+                        <div class="space-y-6">
+                            <button id="calculate-deal-btn" class="btn btn-primary w-full text-lg">
+                                <span>Calculate Deal</span>
+                            </button>
+
+                            <div id="results-container" class="result-box" style="display: none;">
+                                <h3 class="result-box-title">Deal Summary</h3>
                                 <div class="result-line">
                                     <span class="result-line-label">Estimated Gross Profit</span>
                                     <span id="gross-profit-result" class="result-line-value text-2xl profit">$0</span>
@@ -740,18 +732,15 @@
                                     <span id="total-cash-needed-result" class="result-line-value">$0</span>
                                 </div>
                                 <div class="result-line">
-                                    <span class="result-line-label">Total Investment (All Cash)</span>
-                                    <span id="total-investment-cash-result" class="result-line-value">$0</span>
-                                </div>
-                                <div class="result-line">
                                     <span class="result-line-label">Profit per Month</span>
                                     <span id="profit-per-month-result" class="result-line-value">$0</span>
                                 </div>
-                            </div>
+                                <div class="result-line">
+                                    <span class="result-line-label" title="Cash-on-Cash ROI (All-Cash Deal)">Total Investment (Cash Deal)</span>
+                                    <span id="total-investment-cash-result" class="result-line-value">$0</span>
+                                </div>
 
-                            <!-- Cost Breakdown -->
-                            <div class="result-box mb-4">
-                                <h4 class="result-box-title">Cost Breakdown</h4>
+                                <h3 class="subsection-title">Cost Breakdown</h3>
                                 <div class="result-line">
                                     <span class="result-line-label">Purchase Price</span>
                                     <span id="purchase-price-result" class="result-line-value">$0</span>
@@ -761,96 +750,77 @@
                                     <span id="rehab-costs-result" class="result-line-value">$0</span>
                                 </div>
                                 <div class="result-line">
-                                    <span class="result-line-label">Total Holding Costs</span>
+                                    <span class="result-line-label">Holding Costs</span>
                                     <span id="total-holding-costs-result" class="result-line-value">$0</span>
                                 </div>
                                 <div class="result-line">
-                                    <span class="result-line-label">Total Financing Costs</span>
+                                    <span class="result-line-label">Financing Costs</span>
                                     <span id="total-financing-costs-result" class="result-line-value">$0</span>
                                 </div>
                                 <div class="result-line">
-                                    <span class="result-line-label">Total Selling Costs</span>
+                                    <span class="result-line-label">Selling Costs</span>
                                     <span id="total-selling-costs-result" class="result-line-value">$0</span>
                                 </div>
-                                <div class="result-line font-bold" style="border-top: 2px solid var(--border-color); border-bottom: none; padding-top: 8px;">
+                                <div class="result-line total-line">
                                     <span class="result-line-label">Total Costs</span>
                                     <span id="total-costs-result" class="result-line-value">$0</span>
                                 </div>
-                            </div>
 
-                            <!-- Profit Check -->
-                            <div class="result-box">
-                                <h4 class="result-box-title">Profit Check</h4>
-                                <div class="result-line">
-                                    <span class="result-line-label">ARV</span>
+                                <h3 class="subsection-title">Profit Check</h3>
+                                <div class="result-line text-sm">
+                                    <span class="result-line-label">Est. ARV</span>
                                     <span id="profit-check-arv" class="result-line-value">$0</span>
                                 </div>
-                                <div class="result-line">
-                                    <span class="result-line-label">- Total Costs</span>
-                                    <span id="profit-check-costs" class="result-line-value">$0</span>
+                                <div class="result-line text-sm">
+                                    <span class="result-line-label">Total Costs</span>
+                                    <span id="profit-check-costs" class="result-line-value loss">($0)</span>
                                 </div>
-                                <div class="result-line font-bold" style="border-top: 2px solid var(--border-color); border-bottom: none; padding-top: 8px;">
+                                <div class="result-line total-line">
                                     <span class="result-line-label">Profit</span>
-                                    <span id="profit-check-result" class="result-line-value">$0</span>
+                                    <span id="profit-check-result" class="result-line-value profit">$0</span>
                                 </div>
-                            </div>
-                            
-                            <!-- AI Summary Box -->
-                            <div id="ai-summary-container" class="ai-output-box" style="display: none;">
-                                <div class="flex justify-between items-center mb-2">
-                                    <h4 class="result-box-title mb-0">AI Deal Summary</h4>
-                                </div>
-                                <div id="ai-summary-spinner" class="spinner-container">
-                                    <div class="spinner"></div>
-                                    <span>Analyzing deal...</span>
-                                </div>
-                                <div id="ai-summary-content" class="ai-output-content" style="display: none;"></div>
-                            </div>
-                            
-                            <div class="flex flex-wrap gap-4 mt-6">
-                                <button id="get-deal-summary-btn" class="btn btn-secondary">
-                                    <span class="spinner"></span>
-                                    <span>✨ Get AI Deal Summary</span>
-                                </button>
-                                <button id="save-deal-btn" class="btn btn-secondary">
-                                    <span>💾 Save Deal</span>
-                                </button>
-                                <button id="print-report-btn" class="btn btn-secondary">
-                                    <span>🖨️ Print Report</span>
-                                </button>
-                            </div>
 
+                                <!-- AI Summary & Actions -->
+                                <div class="mt-6 space-y-3">
+                                    <button id="get-deal-summary-btn" class="btn btn-secondary w-full">
+                                        <span class="spinner"></span>
+                                        <span>✨ Get AI Deal Summary</span>
+                                    </button>
+                                    <div id="ai-summary-container" class="ai-output-box" style="display: none;">
+                                        <div id="ai-summary-spinner" class="spinner-container" style="display: none;">
+                                            <div class="spinner-sm"></div>
+                                        </div>
+                                        <pre id="ai-summary-content" class="ai-output-content"></pre>
+                                    </div>
+                                    <div class="flex space-x-3">
+                                        <button id="save-deal-btn" class="btn btn-secondary w-full">💾 Save Deal</button>
+                                        <button id="print-report-btn" class="btn btn-secondary w-full">🖨️ Print Report</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Calculate Button -->
-                    <div class="mt-6 pt-4 border-t border-gray-700">
-                        <button id="calculate-deal-btn" class="btn btn-primary w-full md:w-auto">
-                            <span class="spinner"></span>
-                            <span>Calculate Deal</span>
-                        </button>
-                    </div>
-                </div>
+                </div> <!-- End Deal Calculator Tab Pane -->
 
                 <!-- ===== ARV Comps Modal ===== -->
                 <div id="arv-modal" class="modal-overlay">
-                    <div class="modal-content">
+                    <div class="modal-content" style="max-width: 800px;">
                         <div class="modal-header">
                             <h3 class="modal-title">ARV Comps Calculator</h3>
                             <span id="arv-modal-close" class="modal-close">&times;</span>
                         </div>
                         <div class="modal-body">
                             <!-- AI Comp Finder -->
-                            <div class="result-box mb-4">
-                                <h4 class="result-box-title">AI Comp Finder</h4>
-                                <div class="input-group mb-2">
-                                    <label for="subject-address" class="label">Subject Property Address or Zip</label>
-                                    <input type="text" id="subject-address" class="input" placeholder="e.g., 123 Main St, Denver, CO or 80210">
-                                </div>
-                                <div class="grid-container">
+                            <div class="p-4 rounded-lg bg-gray-800 border border-gray-700 mb-6">
+                                <h4 class="subsection-title mt-0">AI Comp Finder</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="input-group md:col-span-3">
+                                        <label for="subject-address" class="label">Subject Property Address</label>
+                                        <input type="text" id="subject-address" class="input" placeholder="e.g., 123 Main St, Denver, CO 80210">
+                                    </div>
                                     <div class="input-group">
                                         <label for="ai-comp-radius" class="label">Radius (miles)</label>
-                                        <input type="number" id="ai-comp-radius" class="input" value="3">
+                                        <input type="number" id="ai-comp-radius" class="input" placeholder="e.g., 3" value="3">
                                     </div>
                                     <div class="input-group">
                                         <label for="ai-comp-status" class="label">Comp Status</label>
@@ -859,87 +829,108 @@
                                             <option value="For Sale">For Sale Comps</option>
                                         </select>
                                     </div>
+                                    <div class="input-group" id="ai-sold-since-container">
+                                        <label for="ai-sold-since" class="label">Sold Since</label>
+                                        <select id="ai-sold-since" class="select">
+                                            <option value="3 months">Last 3 Months</option>
+                                            <option value="1 month">Last 1 Month</option>
+                                            <option value="6 months">Last 6 Months</option>
+                                            <option value="12 months">Last 12 Months</option>
+                                            <option value="24 months">Last 24 Months</option>
+                                            <option value="36 months">Last 36 Months</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div id="ai-sold-since-container" class="input-group mt-2">
-                                    <label for="ai-sold-since" class="label">Sold Since</label>
-                                    <select id="ai-sold-since" class="select">
-                                        <option value="1 month">1 Month</option>
-                                        <option value="3 months">3 Months</option>
-                                        <option value="6 months" selected>6 Months</option>
-                                        <option value="12 months">12 Months</option>
-                                        <option value="24 months">24 Months</option>
-                                        <option value="36 months">36 Months</option>
-                                    </select>
-                                </div>
-                                <button id="ai-comp-finder-btn" class="btn btn-primary mt-4 w-full">
+                                <button id="ai-comp-finder-btn" class="btn btn-primary w-full mt-4">
                                     <span class="spinner"></span>
                                     <span>✨ Find Comps with AI</span>
                                 </button>
                                 <p id="ai-comp-finder-status" class="text-sm text-center mt-2" style="display: none;"></p>
                             </div>
                             
-                            <!-- Manual Comps -->
+                            <!-- Manual Comps Table -->
                             <h4 class="subsection-title">Manual Comps</h4>
-                            <div class="input-row mb-2">
+                            <div class="input-group mb-4 w-full md:w-1/3">
                                 <label for="subject-sqft" class="label">Subject Property Sq. Ft.</label>
                                 <input type="text" id="subject-sqft" class="input" placeholder="e.g., 1,500" oninput="formatCurrency(this)">
                             </div>
-                            
                             <div class="comp-grid-header">
-                                <label class="label">Address</label>
-                                <label class="label">Beds</label>
-                                <label class="label">Baths</label>
-                                <label class="label">Sq. Ft.</label>
-                                <label class="label">Sale Price</label>
+                                <span>Address</span>
+                                <span>Beds</span>
+                                <span>Baths</span>
+                                <span>Sq. Ft.</span>
+                                <span>Sale Price</span>
                             </div>
-                            
-                            <!-- Comps will be dynamically added here -->
-                            <div id="comps-list-container"></div>
-                            
-                            <button id="add-comp-row-btn" class="btn btn-secondary btn-sm mt-2">
-                                <span>+ Add Another Comp</span>
-                            </button>
+                            <div id="comps-list-container" class="space-y-2 mb-4">
+                                <!-- Comp rows injected by JS -->
+                            </div>
+                            <button id="add-comp-row-btn" class="btn btn-secondary btn-sm">Add Comp Row</button>
 
                             <!-- ARV Results -->
-                            <div class="mt-6 pt-4 border-t border-gray-700">
-                                <div class="result-line">
-                                    <span class="result-line-label">Avg. Price / Sq. Ft.</span>
-                                    <span id="avg-price-per-sqft-result" class="result-line-value text-xl">$0</span>
-                                </div>
-                                <div class="result-line" style="border-bottom: none;">
-                                    <span class="result-line-label">Estimated ARV</span>
-                                    <span id="estimated-arv-result" class="result-line-value text-2xl profit">$0</span>
+                            <div class="mt-6 pt-6 border-t border-gray-700">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="result-box text-center">
+                                        <span class="result-line-label block">Avg. Price / Sq. Ft.</span>
+                                        <span id="avg-price-per-sqft-result" class="result-line-value text-2xl profit">$0</span>
+                                    </div>
+                                    <div class="result-box text-center">
+                                        <span class="result-line-label block">Estimated ARV</span>
+                                        <span id="estimated-arv-result" class="result-line-value text-2xl profit">$0</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button id="use-arv-btn" class="btn btn-primary">
-                                <span>Use this ARV</span>
-                            </button>
+                            <button id="use-arv-btn" class="btn btn-primary">Use this ARV</button>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- ===== AI Rehab Breakdown Modal ===== -->
                 <div id="rehab-modal" class="modal-overlay">
-                    <div class="modal-content" style="max-width: 600px;">
+                    <div class="modal-content">
                         <div class="modal-header">
-                            <h3 class="modal-title">AI Rehab Breakdown</h3>
+                            <h3 class="modal-title">Rehab Cost Estimator</h3>
                             <span id="rehab-modal-close" class="modal-close">&times;</span>
                         </div>
                         <div class="modal-body">
-                            <div class="input-group">
-                                <label for="rehab-description" class="label">Describe the Rehab</label>
-                                <textarea id="rehab-description" class="input" rows="3" placeholder="e.g., Full kitchen gut, 2 new baths, new paint and flooring, roof repair..."></textarea>
+                            <!-- AI Estimator -->
+                            <div class="p-4 rounded-lg bg-gray-800 border border-gray-700 mb-6">
+                                <h4 class="subsection-title mt-0">AI Rehab Cost Estimator</h4>
+                                <div class="input-group mb-4">
+                                    <label for="rehab-description" class="label">Describe the Rehab</label>
+                                    <textarea id="rehab-description" class="input" rows="3" placeholder="e.g., Full kitchen gut, 2 new bathrooms, new flooring throughout, interior and exterior paint."></textarea>
+                                </div>
+                                <div class="input-group mb-4">
+                                    <label for="subject-sqft-rehab" class="label">Property Sq. Ft.</label>
+                                    <input type="text" id="subject-sqft-rehab" class="input" placeholder="e.g., 1,500" oninput="formatCurrency(this)">
+                                </div>
+                                <button id="ai-rehab-btn" class="btn btn-primary w-full">
+                                    <span class="spinner"></span>
+                                    <span>✨ Generate AI Estimate</span>
+                                </button>
+                                <div id="ai-rehab-output" class="ai-output-box" style="display: none;">
+                                    <div id="ai-rehab-cost-output" class="mb-4">
+                                        <!-- AI Cost injected here -->
+                                    </div>
+                                    <pre id="ai-rehab-content" class="ai-output-content"></pre>
+                                </div>
                             </div>
-                            <button id="ai-rehab-btn" class="btn btn-primary mt-4 w-full">
-                                <span class="spinner"></span>
-                                <span>Generate Breakdown</span>
-                            </button>
                             
-                            <div id="ai-rehab-output" class="ai-output-box" style="display: none;">
-                                <pre id="ai-rehab-content" class="ai-output-content"></pre>
+                            <!-- Manual Itemization -->
+                            <h4 class="subsection-title">Manual Itemization</h4>
+                            <div id="manual-rehab-list" class="space-y-2 mb-4">
+                                <!-- Itemized rows injected by JS -->
                             </div>
+                            <button id="add-rehab-item-btn" class="btn btn-secondary btn-sm">Add Item</button>
+                            
+                            <div class="mt-4 pt-4 border-t border-gray-700">
+                                <div class="result-line" style="border-bottom: none;">
+                                    <span class="result-line-label">Total Itemized Cost</span>
+                                    <span id="manual-rehab-total" class="result-line-value text-xl profit">$0</span>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -947,112 +938,106 @@
                 <!-- ===== Tab Pane: MAO Calculator ===== -->
                 <div id="mao-calculator" class="tab-pane">
                     <div class="grid-container">
-                        <!-- Quick MAO (70% Rule) -->
-                        <div class="result-box">
-                            <h3 class="result-box-title">Quick MAO Rule (Slider)</h3>
-                            <p class="text-xs text-secondary mb-4">
-                                The "70% Rule" is a common baseline. It means your offer should be 70% of the ARV minus rehab costs.
+                        <!-- Quick MAO Rule -->
+                        <div class="result-box space-y-4">
+                            <h3 class="result-box-title">Quick MAO Rule (e.g., The 70% Rule)</h3>
+                            <p class="text-sm text-gray-400 -mt-2">
+                                The 70% Rule is a common benchmark stating you should pay no more than 70% of the ARV, minus rehab costs.
                                 <br>
-                                <strong>Higher %</strong> = Less profit, but a more competitive offer.
+                                <span class="text-cyan-400">Higher %</span> = More aggressive offer, less profit.
                                 <br>
-                                <strong>Lower %</strong> = More profit, but a less competitive offer.
+                                <span class="text-red-400">Lower %</span> = More conservative offer, more profit.
                             </p>
-                            <div class="input-group mb-4">
+                            <div class="input-group">
                                 <label for="mao-rule-arv" class="label">After Repair Value (ARV)</label>
                                 <input type="text" id="mao-rule-arv" class="input" placeholder="e.g., 400,000" oninput="formatCurrency(this)">
                             </div>
-                            <div class="input-group mb-4">
+                            <div class="input-group">
                                 <label for="mao-rule-rehab" class="label">Rehab Costs</label>
                                 <input type="text" id="mao-rule-rehab" class="input" placeholder="e.g., 50,000" oninput="formatCurrency(this)">
                             </div>
-                            <div class="input-group mb-4">
-                                <label for="mao-rule-slider" class="label">ARV Percentage: <span id="mao-rule-percent" class="text-primary font-bold">70%</span></label>
+                            <div class="input-group">
+                                <label for="mao-rule-slider" class="label">MAO Percentage: <span id="mao-rule-percent" class="text-cyan-400 font-bold">70%</span></label>
                                 <input type="range" id="mao-rule-slider" class="slider" min="50" max="100" value="70">
                             </div>
-                            <div class="mt-4 pt-4 border-t border-gray-700">
-                                <div class="result-line" style="border-bottom: none;">
-                                    <span class="result-line-label">Max Allowable Offer</span>
-                                    <span id="mao-rule-result" class="result-line-value text-2xl profit">$0</span>
-                                </div>
+                            <div class="result-line total-line">
+                                <span class="result-line-label">Max Allowable Offer (MAO)</span>
+                                <span id="mao-rule-result" class="result-line-value text-2xl profit">$0</span>
                             </div>
                         </div>
 
                         <!-- MAO by Desired Profit -->
-                        <div class="result-box">
+                        <div class="result-box space-y-4">
                             <h3 class="result-box-title">MAO by Desired Profit</h3>
-                            <div class="input-group mb-4">
+                            <div class="input-group">
                                 <label for="mao-profit-arv" class="label">After Repair Value (ARV)</label>
                                 <input type="text" id="mao-profit-arv" class="input" placeholder="e.g., 400,000" oninput="formatCurrency(this)">
                             </div>
-                            <div class="input-group mb-4">
+                            <div class="input-group">
                                 <label for="mao-profit-rehab" class="label">Rehab Costs</label>
                                 <input type="text" id="mao-profit-rehab" class="input" placeholder="e.g., 50,000" oninput="formatCurrency(this)">
                             </div>
-                            <div class="input-group mb-4">
-                                <label for="mao-profit-holding" class="label">Est. Holding & Selling Costs</label>
-                                <input type="text" id="mao-profit-holding" class="input" placeholder="e.g., 40,000" oninput="formatCurrency(this)">
+                            <div class="input-group">
+                                <label for="mao-profit-holding" class="label">All Holding & Selling Costs</label>
+                                <input type="text" id="mao-profit-holding" class_name="input" placeholder="e.g., 40,000" oninput="formatCurrency(this)">
                             </div>
-                            <div class="input-group mb-4">
+                            <div class="input-group">
                                 <label for="mao-profit-desired" class="label">Desired Profit</label>
                                 <input type="text" id="mao-profit-desired" class="input" placeholder="e.g., 60,000" oninput="formatCurrency(this)">
                             </div>
-                            <div class="mt-4 pt-4 border-t border-gray-700">
-                                <div class="result-line" style="border-bottom: none;">
-                                    <span class="result-line-label">Max Allowable Offer</span>
-                                    <span id="mao-profit-result" class="result-line-value text-2xl profit">$0</span>
-                                </div>
+                            <div class="result-line total-line">
+                                <span class="result-line-label">Max Allowable Offer (MAO)</span>
+                                <span id="mao-profit-result" class="result-line-value text-2xl profit">$0</span>
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> <!-- End MAO Calculator Tab Pane -->
 
                 <!-- ===== Tab Pane: AI Market Analyzer ===== -->
                 <div id="ai-market-analyzer" class="tab-pane">
-                    <!-- AI Market Analysis -->
-                    <div class="result-box mb-6">
-                        <h3 class="result-box-title">AI Neighborhood Analyzer</h3>
-                        <p class="text-xs text-secondary mb-4">Enter a zip code or full address to get an AI-powered analysis of the local market, schools, and amenities.</p>
-                        <div class="input-group mb-4">
-                            <label for="ai-market-address" class="label">Address or Zip Code</label>
-                            <input type="text" id="ai-market-address" class="input" placeholder="e.g., 123 Main St, Denver, CO or 80210">
-                        </div>
-                        <button id="ai-market-btn" class="btn btn-primary w-full">
-                            <span class="spinner"></span>
-                            <span>✨ Analyze Market</span>
-                        </button>
-                        <div id="ai-market-output" class="ai-output-box" style="display: none;">
-                            <pre id="ai-market-content" class="ai-output-content"></pre>
-                        </div>
-                    </div>
-
-                    <!-- Market Velocity -->
-                    <div class="result-box">
-                        <h3 class="result-box-title">Market Velocity (Sell-Through Rate)</h3>
-                        <p class="text-xs text-secondary mb-4">This measures market "hotness." A high rate means it's a seller's market (homes sell fast). A low rate means it's a buyer's market (homes sit).</p>
-                        
-                        <!-- AI Velocity Search -->
-                        <div class="mb-4 p-4 rounded-lg bg-gray-800 border border-gray-700">
-                            <h4 class="subsection-title mt-0">AI-Powered Velocity Search</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="input-group">
-                                    <label for="ai-velocity-zip" class="label">Zip Code</label>
-                                    <input type="text" id="ai-velocity-zip" class="input" placeholder="e.g., 80210">
-                                </div>
-                                <div class="input-group">
-                                    <label for="ai-velocity-type" class="label">Property Type (Optional)</label>
-                                    <input type="text" id="ai-velocity-type" class="input" placeholder="e.g., 3-bed homes">
-                                </div>
+                    <div class="grid-container">
+                        <!-- AI Neighborhood Analysis -->
+                        <div class="result-box space-y-4">
+                            <h3 class="result-box-title">AI Neighborhood Analysis</h3>
+                            <div class="input-group">
+                                <label for="ai-market-address" class="label">Address or Zip Code</label>
+                                <input type="text" id="ai-market-address" class="input" placeholder="e.g., 80210">
                             </div>
-                            <button id="ai-velocity-btn" class="btn btn-primary w-full mt-4">
+                            <button id="ai-market-btn" class="btn btn-primary w-full">
                                 <span class="spinner"></span>
-                                <span>✨ AI-Powered Velocity Search</span>
+                                <span>✨ Analyze Market</span>
                             </button>
-                            <p id="ai-velocity-status" class="text-sm text-center mt-2" style="display: none;"></p>
+                            <div id="ai-market-output" class="ai-output-box" style="display: none;">
+                                <pre id="ai-market-content" class="ai-output-content"></pre>
+                            </div>
                         </div>
+                        
+                        <!-- Market Velocity -->
+                        <div class="result-box space-y-4">
+                            <h3 class="result-box-title">Market Velocity (Sell-Through Rate)</h3>
+                            
+                            <!-- AI Velocity -->
+                            <div class="p-4 rounded-lg bg-gray-800 border border-gray-700">
+                                <h4 class="subsection-title mt-0">AI-Powered Velocity Search</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="input-group">
+                                        <label for="ai-velocity-zip" class="label">Zip Code</label>
+                                        <input type="text" id="ai-velocity-zip" class="input" placeholder="e.g., 80210">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="ai-velocity-type" class="label">Property Type (Optional)</label>
+                                        <input type="text" id="ai-velocity-type" class="input" placeholder="e.g., 3-bed homes">
+                                    </div>
+                                </div>
+                                <button id="ai-velocity-btn" class="btn btn-primary w-full mt-4">
+                                    <span class="spinner"></span>
+                                    <span>✨ AI-Powered Velocity Search</span>
+                                </button>
+                                <p id="ai-velocity-status" class="text-sm text-center mt-2" style="display: none;"></p>
+                            </div>
 
-                        <!-- Manual Velocity Calculator -->
-                        <h4 class="subsection-title">Manual Calculator</h4>
-                        <div class="grid-container">
+                            <!-- Manual Velocity -->
+                            <h4 class="subsection-title">Manual Calculator</h4>
                             <div class="input-group">
                                 <label for="velocity-sold" class="label">Homes Sold (Last 30 Days)</label>
                                 <input type="number" id="velocity-sold" class="input" placeholder="e.g., 20">
@@ -1061,195 +1046,202 @@
                                 <label for="velocity-inventory" class="label">Total Homes for Sale</label>
                                 <input type="number" id="velocity-inventory" class="input" placeholder="e.g., 100">
                             </div>
-                        </div>
-                        <button id="velocity-calculate-btn" class="btn btn-secondary mt-4">Calculate Rate</button>
-                        
-                        <div id="velocity-results-container" class="mt-4" style="display: none;">
-                            <div class="result-line">
-                                <span class="result-line-label">Sell-Through Rate</span>
-                                <span id="velocity-rate-result" class="result-line-value text-2xl profit">0.0%</span>
-                            </div>
-                            <div class="result-line" style="border-bottom: none;">
-                                <span class="result-line-label">Market Type</span>
-                                <span id="velocity-market-result" class="result-line-value text-2xl profit">---</span>
+                            <button id="velocity-calculate-btn" class="btn btn-secondary w-full">Calculate Rate</button>
+                            
+                            <div id="velocity-results-container" style="display: none;">
+                                <div class="result-line mt-4">
+                                    <span class="result-line-label">Sell-Through Rate</span>
+                                    <span id="velocity-rate-result" class="result-line-value text-xl profit">0.0%</span>
+                                </div>
+                                <div class="result-line total-line">
+                                    <span class="result-line-label">Market Type</span>
+                                    <span id="velocity-market-result" class="result-line-value text-2xl profit">---</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
+                </div> <!-- End AI Market Analyzer Tab Pane -->
+
                 <!-- ===== Tab Pane: What If? ===== -->
                 <div id="what-if" class="tab-pane">
-                    <h3 class="section-title">"What If?" Sensitivity Analysis</h3>
-                    <p class="text-sm text-secondary mb-6">This table shows how your profit changes if your ARV or Rehab Costs are different from your estimate. (Calculates automatically after a deal is run).</p>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                    <div class="result-box overflow-x-auto">
+                        <h3 class="result-box-title">"What If?" Sensitivity Analysis</h3>
+                        <p class="text-sm text-gray-400 -mt-2 mb-4">
+                            This table shows your estimated profit based on changes in your ARV and Rehab Costs.
+                            <br>
+                            Your base calculation is the <span class="bg-cyan-900/50 px-2 py-1 rounded">blue cell</span>.
+                        </p>
+                        <table class="what-if-table">
                             <thead>
-                                <tr class="bg-gray-800">
-                                    <th class="p-3 border border-gray-700">Profit</th>
-                                    <th class="p-3 border border-gray-700 text-center">Rehab -10%</th>
-                                    <th class="p-3 border border-gray-700 text-center">Rehab (Base)</th>
-                                    <th class="p-3 border border-gray-700 text-center">Rehab +10%</th>
-                                    <th class="p-3 border border-gray-700 text-center">Rehab +20%</th>
+                                <tr>
+                                    <th class="text-left">Profit</th>
+                                    <th class="text-center">Rehab -10%</th>
+                                    <th class="text-center">Base Rehab</th>
+                                    <th class="text-center">Rehab +10%</th>
+                                    <th class="text-center">Rehab +20%</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="bg-gray-700">
-                                    <td class="p-3 border border-gray-700 font-bold">ARV +5%</td>
-                                    <td id="what-if-arv-high-rehab-low" class="p-3 border border-gray-700 text-center">---</td>
-                                    <td id="what-if-arv-high-rehab-mid" class="p-3 border border-gray-700 text-center">---</td>
-                                    <td id="what-if-arv-high-rehab-high" class="p-3 border border-gray-700 text-center">---</td>
-                                    <td id="what-if-arv-high-rehab-over" class="p-3 border border-gray-700 text-center">---</td>
+                                <tr>
+                                    <td class="text-left">ARV +5%</td>
+                                    <td id="what-if-arv-high-rehab-low">---</td>
+                                    <td id="what-if-arv-high-rehab-mid">---</td>
+                                    <td id="what-if-arv-high-rehab-high">---</td>
+                                    <td id="what-if-arv-high-rehab-over">---</td>
                                 </tr>
-                                <tr class="bg-gray-700/50">
-                                    <td class="p-3 border border-gray-700 font-bold">ARV (Base)</td>
-                                    <td id="what-if-arv-mid-rehab-low" class="p-3 border border-gray-700 text-center">---</td>
-                                    <td id="what-if-profit-base" class="p-3 border border-gray-700 text-center font-bold text-lg bg-cyan-900/30">---</td>
-                                    <td id="what-if-arv-mid-rehab-high" class="p-3 border border-gray-700 text-center">---</td>
-                                    <td id="what-if-arv-mid-rehab-over" class="p-3 border border-gray-700 text-center">---</td>
+                                <tr>
+                                    <td class="text-left">Base ARV</td>
+                                    <td id="what-if-arv-mid-rehab-low">---</td>
+                                    <td id="what-if-profit-base" class="base-cell">---</td>
+                                    <td id="what-if-arv-mid-rehab-high">---</td>
+                                    <td id="what-if-arv-mid-rehab-over">---</td>
                                 </tr>
-                                <tr class="bg-gray-700">
-                                    <td class="p-3 border border-gray-700 font-bold">ARV -5%</td>
-                                    <td id="what-if-arv-low-rehab-low" class="p-3 border border-gray-700 text-center">---</td>
-                                    <td id="what-if-arv-low-rehab-mid" class="p-3 border border-gray-700 text-center">---</td>
-                                    <td id="what-if-arv-low-rehab-high" class="p-3 border border-gray-700 text-center">---</td>
-                                    <td id="what-if-arv-low-rehab-over" class="p-3 border border-gray-700 text-center">---</td>
+                                <tr>
+                                    <td class="text-left">ARV -5%</td>
+                                    <td id="what-if-arv-low-rehab-low">---</td>
+                                    <td id="what-if-arv-low-rehab-mid">---</td>
+                                    <td id="what-if-arv-low-rehab-high">---</td>
+                                    <td id="what-if-arv-low-rehab-over">---</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                </div>
-                
+                </div> <!-- End What If? Tab Pane -->
+
                 <!-- ===== Tab Pane: Batch Analyzer ===== -->
                 <div id="batch-analyzer" class="tab-pane">
-                    <h3 class="section-title">Batch Deal Analyzer</h3>
-                    <p class="text-sm text-secondary mb-4">Upload a CSV file of properties to run a high-level AI analysis on the first 10 deals. Requires `Address`, `Zip`, `Sq. Ft.`, and a `Value` (like Market Value Estimate).</p>
-
-                    <div class="result-box max-w-md mx-auto">
-                        <div class="input-group mb-4">
+                    <div class="result-box space-y-4">
+                        <h3 class="result-box-title">Batch Deal Analyzer</h3>
+                        <p class="text-sm text-gray-400 -mt-2">
+                            Upload a CSV file of properties to analyze the first 10 deals at once.
+                        </p>
+                        
+                        <div class="input-group">
                             <label class="label">1. Upload CSV File</label>
-                            <div class="flex items-center">
-                                <label for="csv-file-input" class="btn btn-secondary cursor-pointer">
-                                    <span>Choose File</span>
-                                </label>
-                                <input type="file" id="csv-file-input" class="file-upload-input" accept=".csv">
-                                <span id="file-name" class="text-sm ml-3 text-secondary">No file chosen</span>
-                            </div>
+                            <label class="file-input-label" for="csv-file-input">
+                                <span>Choose File</span>
+                                <span id="file-name" class="file-name-display">No file chosen</span>
+                            </label>
+                            <input type="file" id="csv-file-input" class="hidden" accept=".csv">
                         </div>
 
-                        <div class="input-group mb-4">
+                        <div class="input-group">
                             <label class="label">2. Map CSV Columns</label>
-                            <button id="map-columns-btn" class="btn btn-secondary w-full" disabled>
-                                <span>Map Columns</span>
-                            </button>
+                            <button id="map-columns-btn" class="btn btn-secondary w-full" disabled>Map Columns</button>
                         </div>
                         
-                        <div class="input-group mb-4">
+                        <div class="input-group">
                             <label for="batch-rehab-cost" class="label">3. Default Rehab Cost ($)</label>
                             <input type="text" id="batch-rehab-cost" class="input" placeholder="e.g., 50,000" oninput="formatCurrency(this)">
                         </div>
-
+                        
                         <button id="run-batch-btn" class="btn btn-primary w-full" disabled>
                             <span class="spinner"></span>
                             <span>Analyze First 10 Properties</span>
                         </button>
                     </div>
-                    
-                    <!-- Batch Results -->
-                    <div id="batch-results-container" class="mt-6" style="display: none;">
+
+                    <div id="batch-results-container" class="result-box mt-6" style="display: none;">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="section-title mb-0">Batch Analysis Results</h3>
-                            <button id="download-batch-csv-btn" class="btn btn-secondary btn-sm">
-                                <span>Download Results (CSV)</span>
-                            </button>
+                            <h3 class="result-box-title">Batch Results</h3>
+                            <button id="download-batch-csv-btn" class="btn btn-secondary btn-sm">Download Results</button>
                         </div>
-                        <p id="batch-status-text" class="text-sm text-secondary text-center my-2"></p>
+                        <p id="batch-status-text" class="text-sm text-gray-400 mb-4"></p>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead id="batch-results-table-head" class="bg-gray-800">
+                            <table class="what-if-table w-full">
+                                <thead id="batch-results-table-head">
                                     <!-- Headers injected by JS -->
                                 </thead>
-                                <tbody id="batch-results-table-body" class="bg-gray-700/50">
-                                    <!-- Rows injected by JS -->
+                                <tbody id="batch-results-table-body">
+                                    <!-- Results injected by JS -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                </div>
+                </div> <!-- End Batch Analyzer Tab Pane -->
 
                 <!-- ===== Tab Pane: Saved Deals ===== -->
                 <div id="saved-deals" class="tab-pane">
-                    <h3 class="section-title">Saved Deals</h3>
-                    <div id="saved-deals-container" class="deal-card-grid">
-                        <p id="no-saved-deals" class="text-secondary text-center">You have no saved deals. Calculate a deal and click "Save Deal" to add one here.</p>
-                        <!-- Saved deal cards injected by JS -->
+                    <div class="result-box">
+                        <h3 class="result-box-title">Saved Deals</h3>
                     </div>
-                </div>
+                    <div id="saved-deals-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+                        <!-- Deal cards injected by JS -->
+                        <div id="no-saved-deals" class="text-gray-400">You have no saved deals.</div>
+                    </div>
+                </div> <!-- End Saved Deals Tab Pane -->
 
-            </div> <!-- End .tab-content -->
-        </div> <!-- End .calculator-wrapper -->
-    </div> <!-- End .container -->
+            </div> <!-- End Tab Content -->
+        </div>
+    </div>
 
     <!-- ===== Modals ===== -->
     
-    <!-- How to Use Modal -->
+    <!-- How-to-Use Modal -->
     <div id="how-to-use-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">How to Use This Calculator</h3>
                 <span id="how-to-use-modal-close" class="modal-close">&times;</span>
             </div>
-            <div class="modal-body">
-                <h4 class="subsection-title">Core Workflow (1-2-3)</h4>
-                <ol class="list-decimal list-inside text-secondary mb-4 space-y-2">
-                    <li>Go to the <strong>Deal Calculator</strong> tab. Fill in your known numbers (Purchase Price, Rehab Costs, etc.).</li>
-                    <li>If you don't know the ARV, click the <strong>✨ Comps Calculator</strong> button. Enter the property's address and use the <strong>✨ AI Comp Finder</strong> to get an estimated ARV. Click "Use this ARV" to send it back.</li>
-                    <li>Click the main <strong>Calculate Deal</strong> button. Your results (Profit, ROI, Cash Needed) will appear on the right. From there, you can save the deal or check the other tabs for deeper analysis.</li>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <h4 class="subsection-title mt-0">Core Workflow (1-2-3)</h4>
+                <ol class="list-decimal list-inside space-y-2 mb-6">
+                    <li>
+                        <strong>Fill out the "Deal Calculator" tab.</strong> 
+                        Enter your Purchase Price, Rehab Costs, and ARV. Use the "✨ Comps" button to find an accurate ARV with AI.
+                    </li>
+                    <li>
+                        <strong>Click "Calculate Deal".</strong> 
+                        Instantly see your potential Profit, ROI, and Total Cash Needed in the "Deal Summary."
+                    </li>
+                    <li>
+                        <strong>Check the other tabs.</strong> 
+                        The calculator automatically uses your data to populate the "MAO Calculator" and "What If?" tabs for deeper analysis.
+                    </li>
                 </ol>
 
-                <h4 class="subsection-title">Tab-by-Tab Feature Guide</h4>
-                <ul>
-                    <li><strong>Deal Calculator (Main Tab)</strong>
-                        <ul>
-                            <li><strong>Core Numbers:</strong> Your main inputs for a single deal.</li>
-                            <li><strong>Financing Type:</strong> Select "All Cash" or "Loan" to see how financing impacts your cash needed and profit.</li>
-                            <li><strong>Results:</strong> Shows your Profit, ROI, Annualized ROI, and a full cost breakdown.</li>
-                            <li><strong>✨ Get AI Deal Summary:</strong> After calculating, get a plain-English analysis of the deal's strengths and weaknesses.</li>
-                            <li><strong>💾 Save Deal:</strong> Saves the current deal to the "Saved Deals" tab.</li>
-                            <li><strong>🖨️ Print Report:</strong> Generates a clean, printable report of your deal.</li>
-                        </ul>
-                    </li>
-                    <li><strong>MAO Calculator</strong>
-                        <ul>
-                            <li><strong>Quick MAO Rule:</strong> Use the slider to find your Max Allowable Offer (MAO) based on a simple percentage of the ARV (e.g., the "70% Rule").</li>
-                            <li><strong>MAO by Desired Profit:</strong> Calculates your MAO based on your *exact* profit goal.</li>
-                        </ul>
-                    </li>
-                    <li><strong>AI Market Analyzer</strong>
-                        <ul>
-                            <li><strong>✨ AI Neighborhood Analyzer:</strong> Uses Google Search to give you a qualitative summary of a zip code, including market trends, school quality, and local amenities.</li>
-                            <li><strong>✨ AI-Powered Velocity Search:</strong> Automatically finds the "Sell-Through Rate" (market hotness) for a zip code.</li>
-                            <li><strong>Manual Velocity Calculator:</strong> Lets you manually calculate the Sell-Through Rate if you already have the numbers.</li>
-                        </ul>
-                    </li>
-                    <li><strong>What If? (Sensitivity)</strong>
-                        <ul>
-                            <li>This "what if" table automatically shows you how your profit would change if your ARV is lower or your rehab costs are higher than you estimated.</li>
-                        </ul>
-                    </li>
-                    <li><strong>Batch Analyzer</strong>
-                        <ul>
-                            <li>Lets you upload a CSV file of *thousands* of properties.</li>
-                            <li><strong>Map Columns:</strong> Tell the calculator which columns in your file are the Address, Zip, Sq. Ft., and Current Value.</li>
-                            <li><strong>Analyze First 10:</strong> Automatically runs an AI-powered analysis (finds ARV, calculates profit/ROI) on the first 10 properties in your list.</li>
-                            <li><strong>Download Results:</strong> Saves a new CSV file with all the analysis columns added.</li>
-                        </ul>
-                    </li>
-                    <li><strong>Saved Deals</strong>
-                        <ul>
-                            <li>View all the deals you've saved. You can "Load" any deal to bring its numbers back into the calculator or "Delete" it.</li>
-                        </ul>
-                    </li>
+                <h4 class="subsection-title">Feature Breakdown</h4>
+                <p class="mb-2"><strong>API Key (At the Top)</strong></p>
+                <p class="modal-text">
+                    This is required for all "✨" AI features. Get a free key from Google AI Studio and paste it here. The calculator saves it in your browser.
+                </p>
+
+                <p class="mb-2 mt-4"><strong>Tab 1: Deal Calculator</strong></p>
+                <ul class="list-disc list-inside space-y-2 modal-text">
+                    <li><strong>Core Numbers:</strong> Your main inputs. The "✨ Comps" button is the most powerful tool here. It opens the ARV Comps Calculator.</li>
+                    <li><strong>ARV Comps Calculator:</strong> Manually enter comps or use the "AI Comp Finder". This tool searches Google for comps based on your address, radius, and timeframes. It then auto-fills the table and calculates your ARV.</li>
+                    <li><strong>Rehab Tools:</strong> Click the "Tools" button to open the Rehab Cost Estimator. You can describe your project and have the AI generate a budget breakdown and cost estimate, or you can itemize your costs manually.</li>
+                    <li><strong>Deal Summary:</strong> Your main results. The "AI Deal Summary" button provides a written analysis of the deal.</li>
+                </ul>
+
+                <p class="mb-2 mt-4"><strong>Tab 2: MAO Calculator</strong></p>
+                <ul class="list-disc list-inside space-y-2 modal-text">
+                    <li><strong>Quick MAO Rule:</strong> Uses the 70% rule (or any % you choose with the slider) to give you a fast "Max Allowable Offer" (MAO).</li>
+                    <li><strong>MAO by Desired Profit:</strong> A more precise tool. It calculates the MAO by working backward from your ARV and desired profit.</li>
+                </ul>
+                
+                <p class="mb-2 mt-4"><strong>Tab 3: AI Market Analyzer</strong></p>
+                <ul class="list-disc list-inside space-y-2 modal-text">
+                    <li><strong>AI Neighborhood Analysis:</strong> Enter a zip code or address to get an AI-powered summary of market trends, school ratings, and local amenities.</li>
+                    <li><strong>Market Velocity:</strong> This shows you how "hot" a market is. You can use the "AI-Powered Velocity Search" to find the data for a zip code, or enter your own numbers manually.</li>
+                </ul>
+                
+                <p class="mb-2 mt-4"><strong>Tab 4: "What If?"</strong></p>
+                <ul class="list-disc list-inside space-y-2 modal-text">
+                    <li>This "Sensitivity Analysis" table automatically shows you how your profit changes if your ARV is lower or your rehab costs are higher than you planned.</li>
+                </ul>
+                
+                <p class="mb-2 mt-4"><strong>Tab 5: Batch Analyzer</strong></p>
+                <ul class="list-disc list-inside space-y-2 modal-text">
+                    <li>**1. Upload CSV:** Upload your list of properties.</li>
+                    <li>**2. Map Columns:** Tell the calculator which columns in your file are the Address, Sq. Ft., etc.</li>
+                    <li>**3. Analyze:** The tool will run the first 10 properties through the AI Comp Finder to estimate an ARV and calculate the potential profit for each. You can then download the results as a new CSV.</li>
+                </ul>
+
+                <p class="mb-2 mt-4"><strong>Tab 6: Saved Deals</strong></p>
+                <ul class="list-disc list-inside space-y-2 modal-text">
+                    <li>After calculating a deal, click "💾 Save Deal". You can name it and it will appear here. Click "Load" to instantly repopulate the calculator with that deal's numbers.</li>
                 </ul>
             </div>
             <div class="modal-footer">
@@ -1268,7 +1260,7 @@
             <div class="modal-body">
                 <div class="input-group">
                     <label for="save-deal-name" class="label">Deal Name or Address</label>
-                    <input type="text" id="save-deal-name" class="input" placeholder="e.g., 123 Main St Flip">
+                    <input type="text" id="save-deal-name" class="input" placeholder="e.g., 123 Main St">
                 </div>
             </div>
             <div class="modal-footer">
@@ -1276,65 +1268,59 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Batch Map Modal -->
     <div id="batch-map-modal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">Map CSV Columns</h3>
                 <span id="batch-map-modal-close" class="modal-close">&times;</span>
             </div>
             <div class="modal-body">
-                <p class="text-sm text-secondary mb-4">Tell the calculator which columns in your CSV file match these required fields.</p>
+                <p class="modal-text">Tell the calculator which columns in your CSV file match these fields.</p>
                 
-                <h4 class="subsection-title">Property Location (Use Option 1 or 2)</h4>
-                <div class="p-4 border border-gray-700 rounded-lg">
-                    <label class="label mb-2"><strong>Option 1: Full Address</strong></label>
+                <div class="p-4 rounded-lg bg-gray-800 border border-gray-700 my-4">
+                    <h4 class="subsection-title mt-0">Address (Option 1 - Full Address)</h4>
                     <div class="input-group">
-                        <label for="map-full-address" class="label text-xs">Full Address</label>
+                        <label for="map-full-address" class="label">Full Address</label>
                         <select id="map-full-address" class="select map-select"></select>
                     </div>
                 </div>
 
-                <p class="text-center text-secondary my-2">OR</p>
-
-                <div class="p-4 border border-gray-700 rounded-lg">
-                    <label class="label mb-2"><strong>Option 2: Separate Fields</strong></label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="input-group">
-                            <label for="map-street-address" class="label text-xs">Street Address</label>
-                            <select id="map-street-address" class="select map-select"></select>
-                        </div>
-                        <div class="input-group">
-                            <label for="map-city" class="label text-xs">City</label>
-                            <select id="map-city" class="select map-select"></select>
-                        </div>
-                        <div class="input-group">
-                            <label for="map-state" class="label text-xs">State</label>
-                            <select id="map-state" class="select map-select"></select>
-                        </div>
+                <div class="p-4 rounded-lg bg-gray-800 border border-gray-700 my-4">
+                    <h4 class="subsection-title mt-0">Address (Option 2 - Separated)</h4>
+                    <div class="input-group">
+                        <label for="map-street-address" class="label">Street Address</label>
+                        <select id="map-street-address" class="select map-select"></select>
+                    </div>
+                    <div class="input-group">
+                        <label for="map-city" class="label">City</label>
+                        <select id="map-city" class="select map-select"></select>
+                    </div>
+                    <div class="input-group">
+                        <label for="map-state" class="label">State</label>
+                        <select id="map-state" class="select map-select"></select>
                     </div>
                 </div>
-
-                <h4 class="subsection-title mt-6">Required Property Details</h4>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                
+                <div class="p-4 rounded-lg bg-gray-800 border border-gray-700 my-4">
+                    <h4 class="subsection-title mt-0">Required Fields</h4>
                     <div class="input-group">
-                        <label for="map-zip-code" class="label text-xs">Zip Code</label>
+                        <label for="map-zip-code" class="label">Zip Code (Required for AI)</label>
                         <select id="map-zip-code" class="select map-select"></select>
                     </div>
                     <div class="input-group">
-                        <label for="map-sqft" class="label text-xs">Square Footage</label>
+                        <label for="map-sqft" class="label">Square Footage (Required)</label>
                         <select id="map-sqft" class="select map-select"></select>
                     </div>
                     <div class="input-group">
-                        <label for="map-purchase-price" class="label text-xs">Current Value (for Purchase Price)</label>
+                        <label for="map-purchase-price" class="label">Current Value / Est. Purchase Price (Required)</label>
                         <select id="map-purchase-price" class="select map-select"></select>
                     </div>
                 </div>
-
             </div>
             <div class="modal-footer">
-                <button id="confirm-map-btn" class="btn btn-primary">Confirm Mapping</button>
+                <button id="confirm-map-btn" class="btn btn-primary">Save Mapping</button>
             </div>
         </div>
     </div>
@@ -1351,6 +1337,7 @@
         let csvData = [];
         let csvHeaders = [];
         let csvColumnMapping = {};
+        let rehabItems = []; // For itemized rehab
 
         // --- Helper Functions ---
         const getById = (id) => document.getElementById(id);
@@ -1464,7 +1451,6 @@
             let totalFinancingCosts = 0;
             let downPayment = 0;
             let upfrontCash = 0;
-            let totalCashNeeded = 0;
 
             const totalHoldingCosts = monthlyHoldingCosts * holdingMonths;
             const totalSellingCosts = (arv * sellingCostsPercent) + sellingCostsFlat;
@@ -1547,9 +1533,8 @@
             getById('total-selling-costs-result').textContent = currencyFormatter(results.totalSellingCosts);
             getById('total-costs-result').textContent = currencyFormatter(results.totalCosts);
             
-            // Profit check
             getById('profit-check-arv').textContent = currencyFormatter(results.arv);
-            getById('profit-check-costs').textContent = currencyFormatter(results.totalCosts);
+            getById('profit-check-costs').textContent = `(${currencyFormatter(results.totalCosts)})`;
             getById('profit-check-result').textContent = currencyFormatter(results.arv - results.totalCosts);
             
             getById('results-container').style.display = 'block';
@@ -1575,7 +1560,7 @@
         async function callGeminiAPI(userQuery, systemPrompt, jsonSchema = null, useGoogleSearch = false, retries = 3) {
             const apiKey = localStorage.getItem('geminiApiKey') || "";
             if (!apiKey) {
-                return { error: new Error("Error: API Key is missing. Please enter your Google AI Studio API Key at the top of the calculator and click 'Save Key'.") };
+                return { error: "Error: API Key is missing. Please enter your Google AI Studio API Key at the top of the calculator and click 'Save Key'." };
             }
             
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
@@ -1617,10 +1602,12 @@
                 delete payload.systemInstruction;
             } else if (useGoogleSearch && !jsonSchema) {
                 // This is for the AI Comp Finder, which does search but *not* a schema
+                // Use a simpler prompt structure that is less likely to fail
+                const combinedPrompt = systemPrompt + "\n\nHere is the user query: " + userQuery;
                 payload = {
                     contents: [{
                         role: "user",
-                        parts: [{ text: systemPrompt + "\n\nUser Query: " + userQuery }]
+                        parts: [{ text: combinedPrompt }]
                     }],
                     tools: [{ "google_search": {} }]
                 };
@@ -1749,6 +1736,120 @@
             return estimatedArv;
         }
 
+        // --- Rehab Cost Estimator Logic ---
+        function addRehabItem(item = {}) {
+            const container = getById('manual-rehab-list');
+            const itemId = `rehab-item-${rehabItems.length}`;
+            const newRow = document.createElement('div');
+            newRow.className = 'rehab-item-grid';
+            newRow.id = itemId;
+            newRow.innerHTML = `
+                <input type="text" class="input" placeholder="Item (e.g., Kitchen)" value="${item.name || ''}">
+                <input type="text" class="input" placeholder="Cost (e.g., 15,000)" value="${item.cost || ''}" oninput="formatCurrency(this)">
+                <button class="btn-icon">&times;</button>
+            `;
+            
+            newRow.querySelector('button').addEventListener('click', () => {
+                newRow.remove();
+                rehabItems = rehabItems.filter(i => i.id !== itemId);
+                updateManualRehabTotal();
+            });
+            
+            newRow.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', updateManualRehabTotal);
+                if (input.placeholder.startsWith('Cost')) {
+                    input.addEventListener('input', () => formatCurrencyInput(input));
+                }
+            });
+
+            container.appendChild(newRow);
+            rehabItems.push({ id: itemId, element: newRow });
+            updateManualRehabTotal();
+        }
+        
+        function updateManualRehabTotal() {
+            let total = 0;
+            getById('manual-rehab-list').querySelectorAll('.rehab-item-grid').forEach(row => {
+                const cost = parseCurrency(row.querySelectorAll('input')[1].value);
+                total += cost;
+            });
+            getById('manual-rehab-total').textContent = currencyFormatter(total);
+            
+            // Also update the main rehab cost field
+            getById('rehab-costs').value = new Intl.NumberFormat('en-US').format(total);
+            return total;
+        }
+
+        async function runAiRehabEstimate() {
+            const description = getById('rehab-description').value.trim();
+            const sqft = parseCurrency(getById('subject-sqft-rehab').value);
+            
+            if (!description || sqft === 0) {
+                showToast("Please enter a rehab description and property square footage.", "error");
+                return;
+            }
+            
+            toggleSpinner('ai-rehab-btn', 'Generate AI Estimate', true);
+            const outputDiv = getById('ai-rehab-output');
+            const costOutputDiv = getById('ai-rehab-cost-output');
+            const contentP = getById('ai-rehab-content');
+            outputDiv.style.display = 'block';
+
+            // --- Two-Step AI Rehab Estimate ---
+            // Step 1: Get Budget Breakdown (Percentages)
+            const breakdownQuery = `Generate a typical budget allocation checklist (using percentages) for a house flip with the following rehab description: "${description}"`;
+            const breakdownPrompt = "You are a general contractor. Provide a simple, bulleted checklist of rehab items and their estimated percentage of the total budget. Do not add any introductory or concluding text. Just the list.";
+            const breakdownResult = await callGeminiAPI(breakdownQuery, breakdownPrompt);
+            
+            if (breakdownResult.error) {
+                toggleSpinner('ai-rehab-btn', 'Generate AI Estimate', false);
+                contentP.textContent = breakdownResult.error.message;
+                return;
+            }
+            
+            contentP.textContent = breakdownResult.text; // Show breakdown first
+
+            // Step 2: Get Total Cost Estimate (JSON)
+            const costQuery = `Based on this rehab description: "${description}" for a ${sqft} sq ft house, what is the total estimated rehab cost?`;
+            const costPrompt = "You are a general contractor. Based on the user's query, provide a low, average, and high total cost estimate. Return ONLY a JSON object in the specified format.";
+            const schema = {
+                type: "OBJECT",
+                properties: {
+                    "lowEstimate": { "type": "NUMBER" },
+                    "averageEstimate": { "type": "NUMBER" },
+                    "highEstimate": { "type": "NUMBER" }
+                },
+                required: ["lowEstimate", "averageEstimate", "highEstimate"]
+            };
+            
+            const costResult = await callGeminiAPI(costQuery, costPrompt, schema);
+            
+            toggleSpinner('ai-rehab-btn', 'Generate AI Estimate', false);
+
+            if (costResult.error) {
+                costOutputDiv.innerHTML = `<p class="text-red-400">Could not estimate total cost. ${costResult.error.message}</p>`;
+            } else {
+                try {
+                    const data = JSON.parse(costResult.text);
+                    costOutputDiv.innerHTML = `
+                        <p class="text-lg font-bold">AI Cost Estimate:</p>
+                        <p>Low: ${currencyFormatter(data.lowEstimate)}</p>
+                        <p><strong>Average: ${currencyFormatter(data.averageEstimate)}</strong></p>
+                        <p>High: ${currencyFormatter(data.highEstimate)}</p>
+                        <button id="use-avg-rehab-btn" class="btn btn-secondary btn-sm mt-2">Use Average Cost</button>
+                    `;
+                    getById('use-avg-rehab-btn').addEventListener('click', () => {
+                        getById('rehab-costs').value = new Intl.NumberFormat('en-US').format(data.averageEstimate);
+                        closeModal('rehab-modal');
+                        showToast("Rehab cost updated!", "success");
+                    });
+                } catch (e) {
+                    console.error("AI Rehab Cost Parse Error:", e, costResult.text);
+                    costOutputDiv.innerHTML = `<p class="text-red-400">AI response for cost was in an invalid format.</p>`;
+                }
+            }
+        }
+
         // --- MAO Calculator Logic ---
         function calculateMaoRule() {
             const arv = parseCurrency(getById('mao-rule-arv').value);
@@ -1812,36 +1913,37 @@
         function calculateWhatIf() {
             if (!currentDealData) return;
 
-            const { arv, rehabCosts } = currentDealData;
+            const { arv, rehabCosts, grossProfit } = currentDealData;
 
-            // Base profit for comparison
-            const baseDeal = calculateDeal(currentDealData);
-            const baseProfit = baseDeal.grossProfit;
-            getById('what-if-profit-base').textContent = currencyFormatter(baseProfit);
-            
-            // Define scenarios
-            const arvScenarios = [arv * 1.05, arv, arv * 0.95];
-            const rehabScenarios = [rehabCosts * 0.90, rehabCosts, rehabCosts * 1.10, rehabCosts * 1.20];
-            
-            // Get IDs for the table cells
-            const cellIds = [
-                ['what-if-arv-high-rehab-low', 'what-if-arv-high-rehab-mid', 'what-if-arv-high-rehab-high', 'what-if-arv-high-rehab-over'],
-                ['what-if-arv-mid-rehab-low', 'what-if-profit-base', 'what-if-arv-mid-rehab-high', 'what-if-arv-mid-rehab-over'],
-                ['what-if-arv-low-rehab-low', 'what-if-arv-low-rehab-mid', 'what-if-arv-low-rehab-high', 'what-if-arv-low-rehab-over']
+            // Fill base values
+            getById('what-if-profit-base').textContent = currencyFormatter(grossProfit);
+
+            // Scenarios
+            const scenarios = [
+                { arvMod: 1.05, rehabMod: 0.90, id: 'what-if-arv-high-rehab-low' },
+                { arvMod: 1.05, rehabMod: 1.00, id: 'what-if-arv-high-rehab-mid' },
+                { arvMod: 1.05, rehabMod: 1.10, id: 'what-if-arv-high-rehab-high' },
+                { arvMod: 1.05, rehabMod: 1.20, id: 'what-if-arv-high-rehab-over' },
+                
+                { arvMod: 1.00, rehabMod: 0.90, id: 'what-if-arv-mid-rehab-low' },
+                { arvMod: 1.00, rehabMod: 1.10, id: 'what-if-arv-mid-rehab-high' },
+                { arvMod: 1.00, rehabMod: 1.20, id: 'what-if-arv-mid-rehab-over' },
+
+                { arvMod: 0.95, rehabMod: 0.90, id: 'what-if-arv-low-rehab-low' },
+                { arvMod: 0.95, rehabMod: 1.00, id: 'what-if-arv-low-rehab-mid' },
+                { arvMod: 0.95, rehabMod: 1.10, id: 'what-if-arv-low-rehab-high' },
+                { arvMod: 0.95, rehabMod: 1.20, id: 'what-if-arv-low-rehab-over' },
             ];
-
-            // Populate table
-            arvScenarios.forEach((currentArv, i) => {
-                rehabScenarios.forEach((currentRehab, j) => {
-                    // Skip the base case, it's already set
-                    if (i === 1 && j === 1) return; 
-
-                    const tempInputs = { ...currentDealData, arv: currentArv, rehabCosts: currentRehab };
-                    const scenarioDeal = calculateDeal(tempInputs);
-                    const cell = getById(cellIds[i][j]);
-                    cell.textContent = currencyFormatter(scenarioDeal.grossProfit);
-                    cell.className = `p-3 border border-gray-700 text-center ${scenarioDeal.grossProfit >= 0 ? 'profit' : 'loss'}`;
-                });
+            
+            scenarios.forEach(scenario => {
+                const newInputs = { ...currentDealData };
+                newInputs.arv = arv * scenario.arvMod;
+                newInputs.rehabCosts = rehabCosts * scenario.rehabMod;
+                
+                const result = calculateDeal(newInputs);
+                const cell = getById(scenario.id);
+                cell.textContent = currencyFormatter(result.grossProfit);
+                cell.className = result.grossProfit >= 0 ? 'profit' : 'loss';
             });
         }
 
@@ -1983,8 +2085,7 @@
                   ]
                 }
                 
-                If you cannot find any comps, return { "comps": [] }.
-                YOU MUST return ONLY the JSON object and no other text.`;
+                Please return ONLY the JSON object and no other text.`;
 
                 const compResult = await callGeminiAPI(compQuery, compPrompt, null, true, 2);
                 let estArv = 0;
@@ -2134,7 +2235,7 @@
             getById('selling-costs-flat').value = new Intl.NumberFormat('en-US').format(deal.sellingCostsFlat);
 
             // Re-calculate and display
-            displayDealResults(calculateDeal(deal));
+            calculateDeal(deal);
             
             // Switch to main tab
             showTab('deal-calculator');
@@ -2374,7 +2475,7 @@
 
                 const query = `${status} home comps near ${address} within a ${radius} mile radius. ${status === 'Sold' ? `Sold in the last ${soldSince}.` : ''}`;
                 const prompt = `You are a real estate comping expert. Find ${status} comparable properties for ${address} within a ${radius} mile radius. ${status === 'Sold' ? `Must be sold in the last ${soldSince}.` : ''}
-                Please return a JSON object with a single key "comps", which is an array. For each comp, include "address", "beds", "baths", "sqft", and "salePrice".
+                Return a JSON object with a single key "comps", which is an array. For each comp, include "address", "beds", "baths", "sqft", and "salePrice".
                 
                 Example:
                 {
@@ -2384,7 +2485,6 @@
                   ]
                 }
                 
-                If you cannot find at least 3 comps, return { "comps": [] }.
                 Please return ONLY the JSON object and no other text.`;
 
                 const result = await callGeminiAPI(query, prompt, null, true, 2);
@@ -2422,33 +2522,23 @@
             getById('rehab-breakdown-btn').addEventListener('click', () => {
                 getById('ai-rehab-content').textContent = '';
                 getById('ai-rehab-output').style.display = 'none';
+                // Sync Sq. Ft. from main calculator
+                getById('subject-sqft-rehab').value = getById('subject-sqft').value || '';
+                // Add 3 default item rows
+                getById('manual-rehab-list').innerHTML = '';
+                rehabItems = [];
+                addRehabItem();
+                addRehabItem();
+                addRehabItem();
                 openModal('rehab-modal');
             });
-            getById('rehab-modal-close').addEventListener('click', () => closeModal('rehab-modal'));
-            getById('ai-rehab-btn').addEventListener('click', async () => {
-                const description = getById('rehab-description').value.trim();
-                if (!description) {
-                    showToast("Please describe the rehab.", "error");
-                    return;
-                }
-                
-                toggleSpinner('ai-rehab-btn', 'Generate Breakdown', true);
-                const outputDiv = getById('ai-rehab-output');
-                const contentP = getById('ai-rehab-content');
-                outputDiv.style.display = 'block';
-
-                const prompt = `Generate a typical budget allocation checklist (using percentages) for a house flip with the following rehab description: "${description}"`;
-                const systemPrompt = "You are a general contractor. Provide a simple, bulleted checklist of rehab items and their estimated percentage of the total budget. Do not add any introductory or concluding text. Just the list.";
-
-                const result = await callGeminiAPI(prompt, systemPrompt);
-                
-                toggleSpinner('ai-rehab-btn', 'Generate Breakdown', false);
-                if (result.error) {
-                    contentP.textContent = result.error.message;
-                } else {
-                    contentP.textContent = result.text;
-                }
+            getById('rehab-modal-close').addEventListener('click', () => {
+                updateManualRehabTotal(); // Make sure total is saved
+                closeModal('rehab-modal');
             });
+            getById('ai-rehab-btn').addEventListener('click', runAiRehabEstimate);
+            getById('add-rehab-item-btn').addEventListener('click', () => addRehabItem());
+
 
             // --- MAO Calculator Tab ---
             getById('mao-rule-arv').addEventListener('input', (e) => {
@@ -2565,104 +2655,52 @@
                 }
             });
 
-            // --- Batch Analyzer Tab ---
-            getById('csv-file-input').addEventListener('change', async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                getById('file-name').textContent = file.name;
-                try {
-                    const { headers, data } = await parseCSV(file);
-                    csvHeaders = headers;
-                    csvData = data;
-                    getById('map-columns-btn').disabled = false;
-                    getById('run-batch-btn').disabled = true; // Force re-mapping
-                    showToast("CSV file loaded successfully!", "success");
-                    openMapModal(); // Automatically open map modal
-                } catch (error) {
-                    showToast(error.message, "error");
-                    getById('file-name').textContent = "No file chosen";
-                }
-            });
-            
-            getById('map-columns-btn').addEventListener('click', openMapModal);
-            
-            getById('batch-map-modal-close').addEventListener('click', () => closeModal('batch-map-modal'));
-            
-            getById('confirm-map-btn').addEventListener('click', () => {
-                csvColumnMapping.fullAddress = getById('map-full-address').value;
-                csvColumnMapping.streetAddress = getById('map-street-address').value;
-                csvColumnMapping.city = getById('map-city').value;
-                csvColumnMapping.state = getById('map-state').value;
-                csvColumnMapping.zipCode = getById('map-zip-code').value;
-                csvColumnMapping.sqft = getById('map-sqft').value;
-                csvColumnMapping.purchasePrice = getById('map-purchase-price').value;
-
-                // Validation
-                const hasOption1 = csvColumnMapping.fullAddress;
-                const hasOption2 = csvColumnMapping.streetAddress && csvColumnMapping.city && csvColumnMapping.state;
-
-                if (!hasOption1 && !hasOption2) {
-                    showToast("Please map either Full Address (Option 1) or all of Option 2.", "error");
+            // --- What If? Logic ---
+            function calculateWhatIf() {
+                if (!currentDealData) {
+                    // Clear the table if no data
+                    const cells = document.querySelectorAll('.what-if-table tbody td');
+                    cells.forEach(cell => {
+                        cell.textContent = '---';
+                        cell.className = '';
+                        if(cell.id === 'what-if-profit-base') cell.className = 'base-cell';
+                    });
                     return;
                 }
-                if (!csvColumnMapping.zipCode || !csvColumnMapping.sqft || !csvColumnMapping.purchasePrice) {
-                    showToast("Please map Zip Code, Sq. Ft., and Current Value.", "error");
-                    return;
-                }
+
+                const { arv, rehabCosts, grossProfit } = currentDealData;
+
+                // Fill base values
+                getById('what-if-profit-base').textContent = currencyFormatter(grossProfit);
+                getById('what-if-profit-base').className = `base-cell ${grossProfit >= 0 ? 'profit' : 'loss'}`;
+
+                // Scenarios
+                const scenarios = [
+                    { arvMod: 1.05, rehabMod: 0.90, id: 'what-if-arv-high-rehab-low' },
+                    { arvMod: 1.05, rehabMod: 1.00, id: 'what-if-arv-high-rehab-mid' },
+                    { arvMod: 1.05, rehabMod: 1.10, id: 'what-if-arv-high-rehab-high' },
+                    { arvMod: 1.05, rehabMod: 1.20, id: 'what-if-arv-high-rehab-over' },
+                    
+                    { arvMod: 1.00, rehabMod: 0.90, id: 'what-if-arv-mid-rehab-low' },
+                    { arvMod: 1.00, rehabMod: 1.10, id: 'what-if-arv-mid-rehab-high' },
+                    { arvMod: 1.00, rehabMod: 1.20, id: 'what-if-arv-mid-rehab-over' },
+
+                    { arvMod: 0.95, rehabMod: 0.90, id: 'what-if-arv-low-rehab-low' },
+                    { arvMod: 0.95, rehabMod: 1.00, id: 'what-if-arv-low-rehab-mid' },
+                    { arvMod: 0.95, rehabMod: 1.10, id: 'what-if-arv-low-rehab-high' },
+                    { arvMod: 0.95, rehabMod: 1.20, id: 'what-if-arv-low-rehab-over' },
+                ];
                 
-                getById('run-batch-btn').disabled = false;
-                closeModal('batch-map-modal');
-                showToast("Column mapping saved!", "success");
-            });
-            
-            getById('run-batch-btn').addEventListener('click', runBatchAnalysis);
-            getById('download-batch-csv-btn').addEventListener('click', downloadBatchCSV);
-
-            // --- Saved Deals Tab ---
-            getById('save-deal-btn').addEventListener('click', () => {
-                if (currentDealData) {
-                    getById('save-deal-name').value = getById('subject-address').value.trim() || '';
-                    openModal('save-deal-modal');
-                } else {
-                    showToast("Please calculate a deal first.", "error");
-                }
-            });
-            getById('save-deal-modal-close').addEventListener('click', () => closeModal('save-deal-modal'));
-            getById('confirm-save-deal-btn').addEventListener('click', saveDeal);
-            
-            // --- Init ---
-            // Load saved deals from localStorage
-            try {
-                const storedDeals = localStorage.getItem('savedDeals');
-                if (storedDeals) {
-                    savedDeals = JSON.parse(storedDeals);
-                    renderSavedDeals();
-                }
-            } catch (e) {
-                console.error("Error loading saved deals:", e);
-                localStorage.removeItem('savedDeals');
+                scenarios.forEach(scenario => {
+                    const newInputs = { ...currentDealData };
+                    newInputs.arv = arv * scenario.arvMod;
+                    newInputs.rehabCosts = rehabCosts * scenario.rehabMod;
+                    
+                    const result = calculateDeal(newInputs);
+                    const cell = getById(scenario.id);
+                    cell.textContent = currencyFormatter(result.grossProfit);
+                    cell.className = result.grossProfit >= 0 ? 'profit' : 'loss';
+                });
             }
 
-            // Trigger initial tab
-            showTab('deal-calculator');
-            
-            // Trigger initial MAO calculations
-            calculateMaoRule();
-            calculateMaoProfit();
-            
-            // Add initial 3 comp rows
-            addCompRow();
-            addCompRow();
-            addCompRow();
-
-            // Add auto-formatting to all currency inputs
-            document.querySelectorAll('input[oninput="formatCurrency(this)"]').forEach(input => {
-                input.addEventListener('input', () => formatCurrencyInput(input));
-                // Format any pre-filled values
-                if(input.value) formatCurrencyInput(input);
-            });
-        });
-    </script>
-</html>
 
