@@ -6,1088 +6,1250 @@
     <title>Homeland Property Flip Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* --- Base & Dark Mode Theme --- */
         :root {
-            --bg-color: #111827; /* Dark Gray-Black */
-            --bg-light: #1F2937; /* Lighter Gray-Black */
-            --bg-lighter: #374151; /* Even Lighter */
-            --text-color: #E5E7EB; /* Light Gray */
-            --primary-color: #06B6D4; /* Neon Cyan */
-            --primary-hover: #0891B2; /* Darker Cyan */
-            --primary-text: #000000; /* Black text for high contrast on neon */
-            --danger-color: #EF4444;
-            --danger-hover: #DC2626;
-            --success-color: #10B981;
-            --success-hover: #059669;
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2a2a2a;
+            --border-color: #444;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --primary-color: #00e5ff; /* Neon Blue/Cyan */
+            --primary-hover: #00b8cc;
+            --danger-color: #ff4d4d;
+            --danger-hover: #cc3d3d;
+            --success-color: #00cc66;
+            --success-hover: #00a352;
         }
-
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .calculator-wrapper {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
         
-        /* Custom scrollbar for a cleaner look */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        /* --- API Key Bar --- */
+        .api-key-bar {
+            background-color: #1a1a1a;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
         }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-light);
-        }
-        ::-webkit-scrollbar-thumb {
-            background-color: var(--bg-lighter);
-            border-radius: 20px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background-color: var(--primary-color);
-        }
-
-        .tab-btn {
-            padding: 0.75rem 1rem;
-            margin-right: 0.25rem;
-            border-radius: 0.375rem 0.375rem 0 0;
-            background-color: var(--bg-light);
-            color: var(--text-color);
-            border: 1px solid var(--bg-lighter);
-            border-bottom: none;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
+        .api-key-bar label {
+            font-size: 0.875rem;
             font-weight: 500;
-            white-space: nowrap; /* Prevents button text from wrapping on mobile */
+            color: var(--text-secondary);
         }
-        
-        /* Horizontal scroll for tabs on mobile */
-        .tabs-container {
-            width: 100%;
-            overflow-x: auto;
-            white-space: nowrap;
+        .api-key-bar .input {
+            flex-grow: 1;
+            min-width: 200px;
+            background-color: var(--bg-tertiary);
         }
 
-        .tab-btn:hover {
-            background-color: var(--bg-lighter);
+        /* --- Tabs --- */
+        .tab-nav {
+            display: flex;
+            flex-wrap: wrap;
+            background-color: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
         }
-        .tab-btn.active {
-            background-color: var(--bg-color);
+        .tab-link {
+            padding: 12px 18px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .tab-link:hover {
+            color: var(--text-primary);
+            background-color: var(--bg-tertiary);
+        }
+        .tab-link.active {
             color: var(--primary-color);
-            border-top-width: 2px;
-            border-top-color: var(--primary-color);
-            border-left-color: var(--bg-lighter);
-            border-right-color: var(--bg-lighter);
-            position: relative;
-            top: 1px;
-            z-index: 10;
+            border-bottom-color: var(--primary-color);
+        }
+        .tab-content {
+            padding: 24px;
         }
         .tab-pane {
             display: none;
-            background-color: var(--bg-color);
-            border: 1px solid var(--bg-lighter);
-            border-radius: 0 0 0.375rem 0.375rem;
-            padding: 1.5rem;
         }
         .tab-pane.active {
             display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Form Elements --- */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .subsection-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 16px;
+            margin-bottom: 12px;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 24px;
+        }
+        @media (min-width: 768px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .input-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        @media (min-width: 640px) {
+            .input-row {
+                flex-direction: row;
+                align-items: center;
+                gap: 10px;
+            }
+            .input-row .input {
+                flex-grow: 1;
+            }
+        }
+        .label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         .input, .select {
-            background-color: var(--bg-light);
-            color: var(--text-color);
-            border: 1px solid var(--bg-lighter);
-            border-radius: 0.375rem;
-            padding: 0.75rem 1rem;
             width: 100%;
-            font-size: 1rem; /* Prevents iOS zoom */
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            padding: 10px 12px;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.2s ease;
         }
         .input:focus, .select:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.3);
+            box-shadow: 0 0 0 2px var(--primary-color_80);
         }
-        .input-group {
-            margin-bottom: 1rem;
+        .input::placeholder {
+            color: #555;
         }
-        .label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text-color);
+        .select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300E5FF%22%20d%3D%22M287%2069.4a17.6%2017.6%0%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.6-3.6%205.4-7.9%205.4-12.9%200-5-1.8-9.2-5.4-12.7z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 10px;
         }
-        .input-row {
+        .select option {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        .input-addon {
             display: flex;
-            gap: 0.5rem;
+            align-items: center;
         }
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.375rem;
-            font-weight: 600;
+        .input-addon .input {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-right: 0;
+        }
+        .input-addon .addon {
+            padding: 10px 12px;
             font-size: 1rem;
+            font-weight: 500;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-left: 0;
+            border-top-right-radius: 6px;
+            border-bottom-right-radius: 6px;
+            color: var(--text-secondary);
+        }
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 5px;
+            outline: none;
+            border: 1px solid var(--border-color);
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            border: 2px solid var(--bg-secondary);
+            border-radius: 50%;
             cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            border: none;
+            transition: background 0.2s ease;
+        }
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            border: 2px solid var(--bg-secondary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .slider:hover::-webkit-slider-thumb {
+            background: var(--primary-hover);
+        }
+        .slider:hover::-moz-range-thumb {
+            background: var(--primary-hover);
+        }
+
+        /* --- Buttons --- */
+        .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            white-space: nowrap;
         }
-        .btn:disabled {
-            background-color: var(--bg-lighter);
-            color: #9CA3AF;
-            cursor: not-allowed;
+        .btn .spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
         }
-        .btn-primary {
+        .btn.btn-primary {
             background-color: var(--primary-color);
-            color: var(--primary-text);
+            color: #000;
         }
-        .btn-primary:hover:not(:disabled) {
+        .btn.btn-primary:hover {
             background-color: var(--primary-hover);
         }
-        .btn-secondary {
-            background-color: var(--bg-light);
-            color: var(--text-color);
-            border: 1px solid var(--bg-lighter);
+        .btn.btn-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
         }
-        .btn-secondary:hover:not(:disabled) {
-            background-color: var(--bg-lighter);
+        .btn.btn-secondary:hover {
+            background-color: var(--border-color);
         }
-        .btn-danger {
+        .btn.btn-danger {
             background-color: var(--danger-color);
-            color: white;
+            color: #fff;
         }
-        .btn-danger:hover:not(:disabled) {
+        .btn.btn-danger:hover {
             background-color: var(--danger-hover);
         }
-        .btn-success {
-            background-color: var(--success-color);
-            color: white;
+        .btn.btn-sm {
+            padding: 6px 12px;
+            font-size: 0.875rem;
         }
-        .btn-success:hover:not(:disabled) {
-            background-color: var(--success-hover);
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
-        
-        /* Custom File Upload Button */
-        .file-input-wrapper {
+        .file-upload-wrapper {
             position: relative;
-            overflow: hidden;
             display: inline-block;
-            cursor: pointer;
         }
-        .file-input-btn {
-            background-color: var(--bg-light);
-            color: var(--text-color);
-            border: 1px solid var(--bg-lighter);
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.375rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-        }
-        .file-input-wrapper:hover .file-input-btn {
-            background-color: var(--bg-lighter);
-        }
-        .file-input-wrapper input[type=file] {
-            font-size: 100px;
+        #csv-file-input {
             position: absolute;
             left: 0;
             top: 0;
             opacity: 0;
+            width: 100%;
+            height: 100%;
             cursor: pointer;
         }
         #file-name {
-            margin-left: 1rem;
+            margin-left: 10px;
+            color: var(--text-secondary);
             font-style: italic;
-            color: #9CA3AF;
         }
 
-        .results-box {
-            background-color: var(--bg-light);
-            border: 1px solid var(--bg-lighter);
-            border-radius: 0.375rem;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
+        /* --- Results & Outputs --- */
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
         }
-        .results-box h3 {
-            color: var(--primary-color);
-            font-size: 1.25rem;
+        @media (min-width: 640px) {
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .result-box {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .result-box-title {
+            font-size: 1.125rem;
             font-weight: 600;
-            margin-bottom: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 12px;
         }
         .result-line {
             display: flex;
             justify-content: space-between;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--bg-lighter);
-            font-size: 1rem;
-            flex-wrap: wrap; /* For mobile */
+            align-items: center;
+            padding: 8px 0;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border-color);
         }
         .result-line:last-child {
             border-bottom: none;
         }
         .result-line-label {
-            font-weight: 500;
-            color: var(--text-color);
-            margin-right: 1rem; /* Space between label and value */
+            color: var(--text-secondary);
         }
         .result-line-value {
             font-weight: 600;
-            text-align: right;
+            color: var(--text-primary);
         }
-        .profit {
-            color: var(--success-color);
-            font-size: 1.25rem;
+        .profit { color: var(--success-color); }
+        .loss { color: var(--danger-color); }
+        .ai-output-box {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            display: none;
         }
-        .loss {
-            color: var(--danger-color);
-            font-size: 1.25rem;
+        .ai-output-content {
+            font-family: monospace;
+            white-space: pre-wrap;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
         }
-        
-        /* Modal Styles */
-        .modal {
+        .spinner-container {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            gap: 10px;
+            color: var(--text-secondary);
+        }
+        .spinner-container .spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* --- Modals --- */
+        .modal-overlay {
             display: none;
             position: fixed;
-            z-index: 1000;
+            z-index: 100;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             overflow: auto;
             background-color: rgba(0, 0, 0, 0.7);
-            padding-top: 60px;
+            animation: fadeIn 0.3s ease;
         }
         .modal-content {
-            background-color: var(--bg-color);
-            margin: 5% auto;
-            padding: 2rem;
-            border: 1px solid var(--bg-lighter);
-            border-radius: 0.5rem;
-            width: 90%;
-            max-width: 800px; /* Wider modal for comps */
             position: relative;
+            background-color: var(--bg-secondary);
+            margin: 5% auto;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: slideIn 0.3s ease-out;
         }
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--bg-lighter);
-            padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
         }
         .modal-title {
-            color: var(--primary-color);
             font-size: 1.5rem;
             font-weight: 600;
+            color: var(--text-primary);
         }
         .modal-close {
-            color: var(--text-color);
+            color: var(--text-secondary);
             font-size: 2rem;
             font-weight: bold;
             cursor: pointer;
-            line-height: 1;
+            transition: color 0.2s ease;
         }
         .modal-close:hover {
-            color: var(--primary-color);
+            color: var(--text-primary);
         }
         .modal-body {
             max-height: 70vh;
             overflow-y: auto;
-        }
-        .modal-body p, .modal-body li {
-            color: var(--text-color);
-            line-height: 1.6;
-            margin-bottom: 1rem;
-        }
-        .modal-body h4 {
-            color: var(--primary-color);
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .modal-body code {
-            background-color: var(--bg-light);
-            color: var(--primary-color);
-            padding: 0.1rem 0.4rem;
-            border-radius: 0.25rem;
-            font-family: monospace;
-        }
-        .modal-body ul {
-            list-style-type: disc;
-            padding-left: 1.5rem;
+            padding-right: 10px; /* for scrollbar */
         }
         .modal-footer {
-            border-top: 1px solid var(--bg-lighter);
-            padding-top: 1.5rem;
-            margin-top: 1.5rem;
-            text-align: right;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
         }
-        
-        /* Spinner */
-        .spinner {
-            width: 1rem;
-            height: 1rem;
-            border: 2px solid currentColor;
-            border-right-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.75s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Responsive Grid for Comps */
-        .comp-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 1rem;
-            align-items: center;
+        /* --- ARV Comps Grid --- */
+        .comp-grid-header, .comp-grid {
+            display: none; /* Mobile first: hide grid */
+            grid-template-columns: 2fr 0.5fr 0.5fr 1fr 1fr;
+            gap: 10px;
+            align-items: flex-end;
         }
         .comp-grid-header {
-            font-weight: 600;
-            color: var(--text-color);
-            padding-bottom: 0.5rem;
-            display: none; /* Hide headers on mobile */
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 10px;
         }
-        @media (min-width: 768px) {
-            .comp-grid-header {
-                display: block; /* Show headers on desktop */
-            }
+        .comp-grid-header .label {
+            margin-bottom: 0;
         }
-        /* Mobile stacked layout for comps */
-        @media (max-width: 767px) {
-            .comp-grid {
-                grid-template-columns: 1fr; /* Stack all items */
-            }
-            .comp-grid .input-group {
+        @media (min-width: 1024px) {
+            .comp-grid-header, .comp-grid {
                 display: grid;
-                grid-template-columns: 100px 1fr; /* Label + Input */
-                align-items: center;
             }
             .comp-grid .label {
-                margin-bottom: 0; /* Remove default margin */
+                display: none; /* Hide individual labels on desktop */
             }
         }
+        .comp-grid .input-group {
+            gap: 0; /* Remove gap for grid */
+        }
 
-        /* Saved Deal Cards */
-        #saved-deals-container {
+        /* --- Saved Deals --- */
+        .deal-card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1rem;
+            gap: 16px;
         }
         .deal-card {
-            background-color: var(--bg-light);
-            border: 1px solid var(--bg-lighter);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            transition: all 0.2s ease-in-out;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.2s ease;
         }
         .deal-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 229, 255, 0.1);
             border-color: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.1);
         }
-        .deal-card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 0.75rem;
-            word-wrap: break-word;
-        }
-        .deal-card-metric {
+        .deal-card-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+        .deal-card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .deal-card-profit {
+            font-size: 1.125rem;
+            font-weight: 700;
+        }
+        .deal-card-body {
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
         .deal-card-label {
-            color: var(--text-color);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
         }
         .deal-card-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .deal-card-footer {
+            padding: 12px 16px;
+            background-color: var(--bg-primary);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        
+        /* --- Tutorial Modal --- */
+        #how-to-use-modal .modal-body ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+        #how-to-use-modal .modal-body li {
+            margin-bottom: 8px;
+        }
+        #how-to-use-modal .modal-body strong {
+            color: var(--primary-color);
             font-weight: 600;
         }
-        .deal-card-actions {
-            margin-top: 1rem;
-            display: flex;
-            gap: 0.5rem;
+        #how-to-use-modal .modal-body code {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: monospace;
         }
 
+        /* --- Utility Classes --- */
+        .text-sm { font-size: 0.875rem; }
+        .text-xs { font-size: 0.75rem; }
+        .text-center { text-align: center; }
+        .font-bold { font-weight: 700; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .pt-4 { padding-top: 1rem; }
+        .w-full { width: 100%; }
+        .max-w-md { max-width: 28rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
     </style>
 </head>
-<body class="antialiased">
+<body class="bg-gray-900 text-gray-100">
 
-    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
-        
-        <header class="text-center mb-6">
-            <h1 class="text-3xl md:text-4xl font-bold" style="color: var(--primary-color);">Homeland Property Flip Calculator</h1>
-            <p class="text-lg text-gray-400">Your all-in-one deal analysis toolkit.</p>
+    <div class="container">
+        <!-- Header -->
+        <header class="text-center my-6">
+            <h1 class="text-4xl font-bold text-white">Homeland Property Flip Calculator</h1>
+            <p class="text-lg text-gray-400 mt-2">Your All-in-One Deal Analysis Suite</p>
+            <button id="how-to-use-btn" class="text-sm text-cyan-400 hover:text-cyan-300 mt-2 font-medium">
+                How to Use This Calculator
+            </button>
         </header>
 
-        <!-- API Key Input -->
-        <div class="max-w-xl mx-auto mb-6 p-4 rounded-lg bg-gray-800 border border-gray-700">
-            <label for="api-key-input" class="label text-center text-cyan-400">Google AI API Key</label>
-            <p class="text-xs text-center text-gray-400 mb-2">Required for all "AI" features. Get a free key from Google AI Studio.</p>
-            <div class="flex gap-2">
-                <input type="password" id="api-key-input" class="input" placeholder="Enter your API Key...">
-                <button id="save-key-btn" class="btn btn-primary">Save</button>
+        <div class="calculator-wrapper">
+            
+            <!-- API Key Bar -->
+            <div class="api-key-bar">
+                <label for="api-key-input" class="whitespace-nowrap">Google AI API Key:</label>
+                <input type="password" id="api-key-input" class="input input-sm" placeholder="Enter your API Key...">
+                <button id="save-api-key-btn" class="btn btn-primary btn-sm">
+                    <span>Save Key</span>
+                </button>
             </div>
-            <p id="api-key-status" class="text-xs text-center text-green-500 mt-2" style="display: none;">API Key saved in browser.</p>
-        </div>
 
-        <!-- How to Use Button -->
-        <div class="text-center mb-4">
-            <button id="how-to-use-btn" class="btn btn-secondary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                    <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
-                </svg>
-                <span>How to Use This Calculator</span>
-            </button>
-        </div>
-
-        <!-- Tab Navigation -->
-        <div class="tabs-container mb-0" style="margin-bottom: -1px;">
-            <nav class="flex">
-                <button class="tab-btn active" onclick="openTab(event, 'deal-calculator')">Deal Calculator</button>
-                <button class="tab-btn" onclick="openTab(event, 'mao-calculator')">MAO Calculator</button>
-                <button class="tab-btn" onclick="openTab(event, 'market-analyzer')">AI Market Analyzer</button>
-                <button class="tab-btn" onclick="openTab(event, 'what-if')">What If?</button>
-                <button class="tab-btn" onclick="openTab(event, 'batch-analyzer')">Batch Analyzer</button>
-                <button class="tab-btn" onclick="openTab(event, 'saved-deals')">Saved Deals</button>
+            <!-- Tab Navigation -->
+            <nav class="tab-nav">
+                <a class="tab-link active" onclick="showTab('deal-calculator')">Deal Calculator</a>
+                <a class="tab-link" onclick="showTab('mao-calculator')">MAO Calculator</a>
+                <a class="tab-link" onclick="showTab('ai-market-analyzer')">AI Market Analyzer</a>
+                <a class="tab-link" onclick="showTab('what-if')">What If? (Sensitivity)</a>
+                <a class="tab-link" onclick="showTab('batch-analyzer')">Batch Analyzer</a>
+                <a class="tab-link" onclick="showTab('saved-deals')">Saved Deals</a>
             </nav>
-        </div>
-        
-	<!-- Tab Content -->
-        <div id="tab-content">
-            <!-- ===== Deal Calculator Tab ===== -->
-            <div id="deal-calculator" class="tab-pane active">
-                
-                <!-- Purchase & Financing -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                        <h3 class="text-xl font-semibold mb-4 text-cyan-400">Purchase & Financing</h3>
-                        <div class="input-group">
-                            <label for="purchase-price" class="label">Purchase Price</label>
-                            <input type="text" id="purchase-price" class="input" placeholder="e.g., 250,000" oninput="formatCurrency(this)">
-                        </div>
-                        
-                        <div class="input-group">
-                            <label for="financing-type" class="label">Financing Type</label>
-                            <select id="financing-type" class="select">
-                                <option value="cash">All Cash</option>
-                                <option value="loan" selected>Financed (Loan)</option>
-                            </select>
-                        </div>
-                        
-                        <div id="loan-inputs-container">
-                            <div class="input-group">
-                                <label for="down-payment-percent" class="label">Down Payment (%)</label>
-                                <input type="number" id="down-payment-percent" class="input" value="25">
-                            </div>
-                            <div class="input-group">
-                                <label for="interest-rate" class="label">Interest Rate (%)</label>
-                                <input type="number" id="interest-rate" class="input" value="7.5">
-                            </div>
-                            <div class="input-group">
-                                <label for="loan-points" class="label">Loan Points (%)</label>
-                                <input type="number" id="loan-points" class="input" value="1">
-                            </div>
-                            <div class="input-group">
-                                <label for="other-closing-costs" class="label">Other Closing Costs (Flat $)</label>
-                                <input type="text" id="other-closing-costs" class="input" placeholder="e.g., 3,000" value="3,000" oninput="formatCurrency(this)">
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- ARV & Rehab Costs -->
-                    <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                        <h3 class="text-xl font-semibold mb-4 text-cyan-400">ARV & Rehab</h3>
-                        <div class="input-group">
-                            <label for="arv" class="label">After Repair Value (ARV)</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="arv" class="input" placeholder="e.g., 400,000" oninput="formatCurrency(this)">
-                                <button id="arv-comps-btn" class="btn btn-secondary" title="ARV Comps Calculator">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calculator" viewBox="0 0 16 16">
-                                        <path d="M12 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h8zM4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4z"/>
-                                        <path d="M4 2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-2zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm3-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm3-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.a.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.T.5.5 0 0 1-.5-.5v-1z"/>
-                                    </svg>
+            <!-- Tab Content -->
+            <div class="tab-content">
+
+                <!-- ===== Tab Pane: Deal Calculator ===== -->
+                <div id="deal-calculator" class="tab-pane active">
+                    <div class="grid-container">
+                        
+                        <!-- Column 1: Core Numbers -->
+                        <div>
+                            <div class="input-group mb-4">
+                                <label for="purchase-price" class="label">Purchase Price</label>
+                                <input type="text" id="purchase-price" class="input" placeholder="e.g., 250,000" oninput="formatCurrency(this)">
+                            </div>
+
+                            <div class="input-group mb-4">
+                                <label for="arv" class="label">After Repair Value (ARV)</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="arv" class="input" placeholder="e.g., 400,000" oninput="formatCurrency(this)">
+                                    <button id="arv-comps-btn" class="btn btn-secondary whitespace-nowrap">
+                                        <span>✨ Comps Calculator</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="input-group mb-4">
+                                <label for="rehab-costs" class="label">Total Rehab Costs</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="rehab-costs" class="input" placeholder="e.g., 50,000" oninput="formatCurrency(this)">
+                                    <button id="rehab-breakdown-btn" class="btn btn-secondary whitespace-nowrap">
+                                        <span>AI Breakdown</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="input-group mb-4">
+                                <label for="financing-type" class="label">Financing Type</label>
+                                <select id="financing-type" class="select">
+                                    <option value="cash">All Cash</option>
+                                    <option value="loan">Hard Money / Loan</option>
+                                </select>
+                            </div>
+
+                            <!-- Hidden Loan Inputs -->
+                            <div id="loan-inputs-container" style="display: none;" class="ml-4 pl-4 border-l-2 border-cyan-500">
+                                <div class="input-group mb-4">
+                                    <label for="down-payment-percent" class="label">Down Payment (%)</label>
+                                    <div class="input-addon">
+                                        <input type="number" id="down-payment-percent" class="input" value="20">
+                                        <span class="addon">%</span>
+                                    </div>
+                                </div>
+                                <div class="input-group mb-4">
+                                    <label for="interest-rate" class="label">Interest Rate (%)</label>
+                                    <div class="input-addon">
+                                        <input type="number" id="interest-rate" class="input" value="10">
+                                        <span class="addon">%</span>
+                                    </div>
+                                </div>
+                                <div class="input-group mb-4">
+                                    <label for="loan-points" class="label">Loan Points (%)</label>
+                                    <div class="input-addon">
+                                        <input type="number" id="loan-points" class="input" value="2">
+                                        <span class="addon">%</span>
+                                    </div>
+                                </div>
+                                <div class="input-group mb-4">
+                                    <label for="other-closing-costs" class="label">Other Loan/Closing Costs ($)</label>
+                                    <input type="text" id="other-closing-costs" class="input" placeholder="e.g., 3,000" oninput="formatCurrency(this)">
+                                </div>
+                            </div>
+
+                            <div class="input-group mb-4">
+                                <label for="holding-months" class="label">Holding Period (Months)</label>
+                                <input type="number" id="holding-months" class="input" value="6" placeholder="e.g., 6">
+                            </div>
+
+                            <div class="input-group mb-4">
+                                <label for="monthly-holding-costs" class="label">Monthly Holding Costs (Taxes, Utilities)</label>
+                                <input type="text" id="monthly-holding-costs" class="input" placeholder="e.g., 500" oninput="formatCurrency(this)">
+                            </div>
+                            
+                            <div class="input-group mb-4">
+                                <label for="selling-costs-percent" class="label">Selling Costs (Agent, Closing) (%)</label>
+                                <div class="input-addon">
+                                    <input type="number" id="selling-costs-percent" class="input" value="6">
+                                    <span class="addon">%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="input-group mb-4">
+                                <label for="selling-costs-flat" class="label">Other Selling Costs (Flat Fee)</label>
+                                <input type="text" id="selling-costs-flat" class="input" placeholder="e.g., 1,000" oninput="formatCurrency(this)">
+                            </div>
+                        </div>
+
+                        <!-- Column 2: Results -->
+                        <div id="results-container" style="display: none;">
+                            <h3 class="section-title">Deal Analysis</h3>
+                            
+                            <!-- Key Metrics -->
+                            <div class="result-box mb-4">
+                                <h4 class="result-box-title">Key Metrics</h4>
+                                <div class="result-line">
+                                    <span class="result-line-label">Estimated Gross Profit</span>
+                                    <span id="gross-profit-result" class="result-line-value text-2xl profit">$0</span>
+                                </div>
+                                <div class="result-line">
+                                    <span class="result-line-label">Return on Investment (ROI)</span>
+                                    <span id="roi-result" class="result-line-value profit">0.0%</span>
+                                </div>
+                                <div class="result-line">
+                                    <span class="result-line-label">Annualized ROI</span>
+                                    <span id="annualized-roi-result" class="result-line-value profit">0.0%</span>
+                                </div>
+                                <div class="result-line">
+                                    <span class="result-line-label">Total Cash Needed</span>
+                                    <span id="total-cash-needed-result" class="result-line-value">$0</span>
+                                </div>
+                                <div class="result-line">
+                                    <span class="result-line-label">Total Investment (All Cash)</span>
+                                    <span id="total-investment-cash-result" class="result-line-value">$0</span>
+                                </div>
+                                <div class="result-line">
+                                    <span class="result-line-label">Profit per Month</span>
+                                    <span id="profit-per-month-result" class="result-line-value">$0</span>
+                                </div>
+                            </div>
+
+                            <!-- Cost Breakdown -->
+                            <div class="result-box mb-4">
+                                <h4 class="result-box-title">Cost Breakdown</h4>
+                                <div class="result-line">
+                                    <span class="result-line-label">Purchase Price</span>
+                                    <span id="purchase-price-result" class="result-line-value">$0</span>
+                                </div>
+                                <div class="result-line">
+                                    <span class="result-line-label">Rehab Costs</span>
+                                    <span id="rehab-costs-result" class="result-line-value">$0</span>
+                                </div>
+                                <div class="result-line">
+                                    <span class="result-line-label">Total Holding Costs</span>
+                                    <span id="total-holding-costs-result" class="result-line-value">$0</span>
+                                </div>
+                                <div class="result-line">
+                                    <span class="result-line-label">Total Financing Costs</span>
+                                    <span id="total-financing-costs-result" class="result-line-value">$0</span>
+                                </div>
+                                <div class="result-line">
+                                    <span class="result-line-label">Total Selling Costs</span>
+                                    <span id="total-selling-costs-result" class="result-line-value">$0</span>
+                                </div>
+                                <div class="result-line font-bold" style="border-top: 2px solid var(--border-color); border-bottom: none; padding-top: 8px;">
+                                    <span class="result-line-label">Total Costs</span>
+                                    <span id="total-costs-result" class="result-line-value">$0</span>
+                                </div>
+                            </div>
+
+                            <!-- Profit Check -->
+                            <div class="result-box">
+                                <h4 class="result-box-title">Profit Check</h4>
+                                <div class="result-line">
+                                    <span class="result-line-label">ARV</span>
+                                    <span id="profit-check-arv" class="result-line-value">$0</span>
+                                </div>
+                                <div class="result-line">
+                                    <span class="result-line-label">- Total Costs</span>
+                                    <span id="profit-check-costs" class="result-line-value">$0</span>
+                                </div>
+                                <div class="result-line font-bold" style="border-top: 2px solid var(--border-color); border-bottom: none; padding-top: 8px;">
+                                    <span class="result-line-label">Profit</span>
+                                    <span id="profit-check-result" class="result-line-value">$0</span>
+                                </div>
+                            </div>
+                            
+                            <!-- AI Summary Box -->
+                            <div id="ai-summary-container" class="ai-output-box" style="display: none;">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="result-box-title mb-0">AI Deal Summary</h4>
+                                </div>
+                                <div id="ai-summary-spinner" class="spinner-container">
+                                    <div class="spinner"></div>
+                                    <span>Analyzing deal...</span>
+                                </div>
+                                <div id="ai-summary-content" class="ai-output-content" style="display: none;"></div>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-4 mt-6">
+                                <button id="get-deal-summary-btn" class="btn btn-secondary">
+                                    <span class="spinner"></span>
+                                    <span>✨ Get AI Deal Summary</span>
+                                </button>
+                                <button id="save-deal-btn" class="btn btn-secondary">
+                                    <span>💾 Save Deal</span>
+                                </button>
+                                <button id="print-report-btn" class="btn btn-secondary">
+                                    <span>🖨️ Print Report</span>
                                 </button>
                             </div>
-                        </div>
 
-                        <div class="input-group">
-                            <label for="rehab-costs" class="label">Total Rehab Costs</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="rehab-costs" class="input" placeholder="e.g., 40,000" oninput="formatCurrency(this)">
-                                <button id="rehab-breakdown-btn" class="btn btn-secondary" title="AI Rehab Breakdown">AI</button>
+                        </div>
+                    </div>
+
+                    <!-- Calculate Button -->
+                    <div class="mt-6 pt-4 border-t border-gray-700">
+                        <button id="calculate-deal-btn" class="btn btn-primary w-full md:w-auto">
+                            <span class="spinner"></span>
+                            <span>Calculate Deal</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ===== ARV Comps Modal ===== -->
+                <div id="arv-modal" class="modal-overlay">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">ARV Comps Calculator</h3>
+                            <span id="arv-modal-close" class="modal-close">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <!-- AI Comp Finder -->
+                            <div class="result-box mb-4">
+                                <h4 class="result-box-title">AI Comp Finder</h4>
+                                <div class="input-group mb-2">
+                                    <label for="subject-address" class="label">Subject Property Address or Zip</label>
+                                    <input type="text" id="subject-address" class="input" placeholder="e.g., 123 Main St, Denver, CO or 80210">
+                                </div>
+                                <div class="grid-container">
+                                    <div class="input-group">
+                                        <label for="ai-comp-radius" class="label">Radius (miles)</label>
+                                        <input type="number" id="ai-comp-radius" class="input" value="3">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="ai-comp-status" class="label">Comp Status</label>
+                                        <select id="ai-comp-status" class="select">
+                                            <option value="Sold">Sold Comps</option>
+                                            <option value="For Sale">For Sale Comps</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="ai-sold-since-container" class="input-group mt-2">
+                                    <label for="ai-sold-since" class="label">Sold Since</label>
+                                    <select id="ai-sold-since" class="select">
+                                        <option value="1 month">1 Month</option>
+                                        <option value="3 months">3 Months</option>
+                                        <option value="6 months" selected>6 Months</option>
+                                        <option value="12 months">12 Months</option>
+                                        <option value="24 months">24 Months</option>
+                                        <option value="36 months">36 Months</option>
+                                    </select>
+                                </div>
+                                <button id="ai-comp-finder-btn" class="btn btn-primary mt-4 w-full">
+                                    <span class="spinner"></span>
+                                    <span>✨ Find Comps with AI</span>
+                                </button>
+                                <p id="ai-comp-finder-status" class="text-sm text-center mt-2" style="display: none;"></p>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Holding & Selling Costs -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                    <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                        <h3 class="text-xl font-semibold mb-4 text-cyan-400">Holding Costs</h3>
-                        <div class="input-group">
-                            <label for="holding-months" class="label">Project Length (Months)</label>
-                            <input type="number" id="holding-months" class="input" placeholder="e.g., 6" value="6">
-                        </div>
-                        <div class="input-group">
-                            <label for="monthly-holding-costs" class="label">Monthly Holding Costs (Taxes, Ins, Utils)</label>
-                            <input type="text" id="monthly-holding-costs" class="input" placeholder="e.g., 500" value="500" oninput="formatCurrency(this)">
-                        </div>
-                    </div>
-
-                    <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                        <h3 class="text-xl font-semibold mb-4 text-cyan-400">Selling Costs</h3>
-                        <div class="input-group">
-                            <label for="selling-costs-percent" class="label">Selling Costs (% of ARV)</label>
-                            <input type="number" id="selling-costs-percent" class="input" placeholder="e.g., 6" value="6">
-                        </div>
-                        <div class="input-group">
-                            <label for="selling-costs-flat" class="label">Selling Costs (Flat $)</label>
-                            <input type="text" id="selling-costs-flat" class="input" placeholder="e.g., 1,500" value="0" oninput="formatCurrency(this)">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Calculate Button -->
-                <div class="mt-8 text-center">
-                    <button id="calculate-deal-btn" class_Original="btn btn-primary w-full md:w-1/2" class="btn btn-primary w-full md:w-1/2">Calculate Deal</button>
-                </div>
-
-                <!-- Results Section -->
-                <div id="results-container" class="results-box mt-8" style="display: none;">
-                    <h3 class="text-center">Deal Analysis Results</h3>
-                    
-                    <div class="result-line bg-gray-900 p-2 rounded">
-                        <span class="result-line-label text-cyan-400">Estimated Gross Profit</span>
-                        <span class="result-line-value text-2xl" id="gross-profit-result">---</span>
-                    </div>
-                    <div class="result-line font-bold text-lg">
-                        <span class="result-line-label">Return on Investment (ROI)</span>
-                        <span class="result-line-value" id="roi-result">---</span>
-                    </div>
-                    <div class="result-line font-bold text-lg mb-4">
-                        <span class="result-line-label">Annualized ROI</span>
-                        <span class="result-line-value" id="annualized-roi-result">---</span>
-                    </div>
-
-                    <h4 class="text-lg font-semibold mb-2 text-cyan-400 mt-6">Investment Breakdown</h4>
-                    <div class="result-line">
-                        <span class="result-line-label">Total Cash Needed (for Financed Deal)</span>
-                        <span class="result-line-value" id="total-cash-needed-result">---</span>
-                    </div>
-                    <div class="result-line">
-                        <span class="result-line-label">Total All-In Investment (if 100% Cash)</span>
-                        <span class="result-line-value" id="total-investment-cash-result">---</span>
-                    </div>
-                    <div class="result-line">
-                        <span class="result-line-label">Profit per Month</span>
-                        <span class="result-line-value" id="profit-per-month-result">---</span>
-                    </div>
-
-                    <h4 class="text-lg font-semibold mb-2 text-cyan-400 mt-6">Cost Breakdown</h4>
-                    <div class="result-line">
-                        <span class="result-line-label">Purchase Price</span>
-                        <span class="result-line-value" id="purchase-price-result">---</span>
-                    </div>
-                    <div class="result-line">
-                        <span class="result-line-label">Rehab Costs</span>
-                        <span class="result-line-value" id="rehab-costs-result">---</span>
-                    </div>
-                    <div class="result-line">
-                        <span class="result-line-label">Total Holding Costs (Utilities, Taxes)</span>
-                        <span class="result-line-value" id="total-holding-costs-result">---</span>
-                    </div>
-                    <div class="result-line">
-                        <span class="result-line-label">Financing Costs (Points, Interest)</span>
-                        <span class="result-line-value" id="total-financing-costs-result">---</span>
-                    </div>
-                    <div class="result-line">
-                        <span class="result-line-label">Total Selling Costs</span>
-                        <span class="result-line-value" id="total-selling-costs-result">---</span>
-                    </div>
-                    <div class="result-line border-t-2 border-cyan-400 font-bold">
-                        <span class="result-line-label">Total Costs</span>
-                        <span class="result-line-value" id="total-costs-result">---</span>
-                    </div>
-                    <div class="result-line font-bold">
-                        <span class="result-line-label">ARV - Total Costs (Profit)</span>
-                        <span class="result-line-value" id="profit-check-result">---</span>
-                    </div>
-
-                    <div class="mt-8 flex flex-col md:flex-row gap-4">
-                        <button id="get-deal-summary-btn" class="btn btn-secondary flex-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-robot" viewBox="0 0 16 16">
-                                <path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5ZM3 8.062C3 6.76 4.235 5.765 5.53 5.886a26.58 26.58 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.933.933 0 0 1-.765.935c-.845.147-2.34.346-4.235.346-1.895 0-3.39-.2-4.235-.346A.933.933 0 0 1 3 9.219V8.062Zm4.542-.827a.25.25 0 0 0-.217.068l-.92.9a24.767 24.767 0 0 1-1.871-.183.25.25 0 0 0-.068.217l.92.9a.25.25 0 0 0 .384.057l1.03-1.03a.25.25 0 0 0-.057-.384l-.92-.9a.25.25 0 0 0-.169-.068Zm1.223 1.833a.25.25 0 0 0-.057.384l1.03 1.03a.25.25 0 0 0 .384-.057l.92-.9a.25.25 0 0 0-.068-.217 24.768 24.768 0 0 1-1.871.183.25.25 0 0 0-.217-.068l-.92.9a.25.25 0 0 0-.169.068l-.92-.9a.25.25 0 0 0-.057-.384l1.03-1.03a.25.25 0 0 0 .384.057l.92.9a.25.25 0 0 0 .169-.068Z"/>
-                                <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1Zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5ZM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5Z"/>
-                            </svg>
-                            Get AI Deal Summary
-                        </button>
-                        <button id="save-deal-btn" class="btn btn-success flex-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-save" viewBox="0 0 16 16">
-                                <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v4.5h2a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 5.5 6.5h2V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z"/>
-                            </svg>
-                            Save Deal
-                        </button>
-                        <button id="print-report-btn" class="btn btn-secondary flex-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
-                                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
-                                <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
-                            </svg>
-                            Print Report
-                        </button>
-                    </div>
-                    <div id="ai-summary-container" class="mt-4" style="display: none;">
-                        <h4 class="text-lg font-semibold mb-2 text-cyan-400">AI Deal Summary</h4>
-                        <div id="ai-summary-spinner" class="flex justify-center items-center h-24" style="display: none;">
-                            <div class="spinner"></div>
-                        </div>
-                        <p id="ai-summary-content" class="text-gray-300 whitespace-pre-wrap p-4 bg-gray-900 rounded"></p>
-                    </div>
-                </div>
-            </div> <!-- End Deal Calculator Tab -->
-
-            <!-- ===== ARV Comps Modal ===== -->
-            <div id="arv-modal" class="modal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2 class="modal-title">ARV Comps Calculator</h2>
-                        <span class="modal-close" id="arv-modal-close">&times;</span>
-                    </div>
-                    <div class="modal-body">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="input-group">
+                            
+                            <!-- Manual Comps -->
+                            <h4 class="subsection-title">Manual Comps</h4>
+                            <div class="input-row mb-2">
                                 <label for="subject-sqft" class="label">Subject Property Sq. Ft.</label>
                                 <input type="text" id="subject-sqft" class="input" placeholder="e.g., 1,500" oninput="formatCurrency(this)">
                             </div>
-                            <div class="input-group">
-                                <label for="subject-address" class="label">Subject Property Address (for AI)</label>
-                                <input type="text" id="subject-address" class="input" placeholder="e.g., 123 Main St, Denver, CO 80202">
+                            
+                            <div class="comp-grid-header">
+                                <label class="label">Address</label>
+                                <label class="label">Beds</label>
+                                <label class="label">Baths</label>
+                                <label class="label">Sq. Ft.</label>
+                                <label class="label">Sale Price</label>
                             </div>
-                        </div>
-                        
-                        <!-- AI Comp Finder -->
-                        <div class="p-4 bg-gray-800 rounded-lg border border-gray-700 my-4">
-                            <h3 class="text-xl font-semibold mb-4 text-cyan-400">AI Comp Finder</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="input-group">
-                                    <label for="ai-comp-status" class="label">Comp Status</label>
-                                    <select id="ai-comp-status" class="select">
-                                        <option value="Sold" selected>Sold Comps</option>
-                                        <option value="For Sale">For Sale Comps</option>
-                                    </select>
-                                </div>
-                                <div class="input-group" id="ai-sold-since-container">
-                                    <label for="ai-sold-since" class="label">Sold Since</label>
-                                    <select id="ai-sold-since" class="select">
-                                        <option value="1 month">Last 1 Month</option>
-                                        <option value="3 months" selected>Last 3 Months</option>
-                                        <option value="6 months">Last 6 Months</option>
-                                        <option value="12 months">Last 12 Months</option>
-                                        <option value="24 months">Last 24 Months</option>
-                                        <option value="36 months">Last 36 Months</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="input-group">
-                                <label for="ai-comp-radius" class="label">Search Radius (in miles)</label>
-                                <input type="number" id="ai-comp-radius" class="input" placeholder="e.g., 3" value="3">
-                            </div>
-                            <button id="ai-comp-finder-btn" class="btn btn-primary w-full">
-                                <span class="spinner" style="display: none;"></span>
-                                ✨ Find Comps with AI
+                            
+                            <!-- Comps will be dynamically added here -->
+                            <div id="comps-list-container"></div>
+                            
+                            <button id="add-comp-row-btn" class="btn btn-secondary btn-sm mt-2">
+                                <span>+ Add Another Comp</span>
                             </button>
-                            <p id="ai-comp-finder-status" class="text-sm text-cyan-400 text-center mt-2" style="display: none;"></p>
-                        </div>
-                        
-                        <!-- Comps Table -->
-                        <div>
-                            <h3 class="text-xl font-semibold mb-4 text-cyan-400">Manual Comps Entry</h3>
-                            <div class="comp-grid mb-2">
-                                <div class="comp-grid-header">Address</div>
-                                <div class="comp-grid-header">Beds</div>
-                                <div class="comp-grid-header">Baths</div>
-                                <div class="comp-grid-header">Sq. Ft.</div>
-                                <div class="comp-grid-header">Sale Price</div>
-                            </div>
-                            <div id="comps-list-container">
-                                <!-- Comp rows will be dynamically inserted here -->
-                            </div>
-                            <button id="add-comp-row-btn" class="btn btn-secondary mt-2">Add Comp</button>
-                        </div>
-                        
-                        <!-- Comps Result -->
-                        <div class="results-box mt-6">
-                            <div class="result-line">
-                                <span class="result-line-label">Average Price per Sq. Ft.</span>
-                                <span class="result-line-value" id="avg-price-per-sqft-result">---</span>
-                            </div>
-                            <div class="result-line font-bold text-lg">
-                                <span class="result-line-label">Estimated ARV</span>
-                                <span class="result-line-value text-cyan-400" id="estimated-arv-result">---</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="use-arv-btn" class="btn btn-success">Use this ARV</button>
-                    </div>
-                </div>
-            </div>
 
-            <!-- ===== AI Rehab Breakdown Modal ===== -->
-            <div id="rehab-modal" class="modal">
-                <div class="modal-content" style="max-width: 600px;">
-                    <div class="modal-header">
-                        <h2 class="modal-title">AI Rehab Breakdown</h2>
-                        <span class="modal-close" id="rehab-modal-close">&times;</span>
-                    </div>
-                    <div class="modal-body">
-                        <p class="text-gray-400 mb-4">Describe the rehab, and the AI will generate a budget checklist. This helps you think through your rehab number.</p>
-                        <div class="input-group">
-                            <label for="rehab-description" class="label">Rehab Description</label>
-                            <textarea id="rehab-description" class="input" rows="3" placeholder="e.g., Full kitchen remodel, 2 new bathrooms, new LVP flooring, and interior/exterior paint."></textarea>
+                            <!-- ARV Results -->
+                            <div class="mt-6 pt-4 border-t border-gray-700">
+                                <div class="result-line">
+                                    <span class="result-line-label">Avg. Price / Sq. Ft.</span>
+                                    <span id="avg-price-per-sqft-result" class="result-line-value text-xl">$0</span>
+                                </div>
+                                <div class="result-line" style="border-bottom: none;">
+                                    <span class="result-line-label">Estimated ARV</span>
+                                    <span id="estimated-arv-result" class="result-line-value text-2xl profit">$0</span>
+                                </div>
+                            </div>
                         </div>
-                        <button id="ai-rehab-btn" class="btn btn-primary w-full">
-                            <span class="spinner" style="display: none;"></span>
-                            Generate Breakdown
-                        </button>
-                        <div id="ai-rehab-output" class="mt-6" style="display: none;">
-                            <h4 class="text-lg font-semibold mb-2 text-cyan-400">Suggested Budget Allocation</h4>
-                            <p id="ai-rehab-content" class="text-gray-300 whitespace-pre-wrap p-4 bg-gray-800 rounded"></p>
+                        <div class="modal-footer">
+                            <button id="use-arv-btn" class="btn btn-primary">
+                                <span>Use this ARV</span>
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- ===== MAO Calculator Tab ===== -->
-            <div id="mao-calculator" class="tab-pane">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Quick MAO Rule -->
-                    <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                        <h3 class="text-xl font-semibold mb-2 text-cyan-400">Quick MAO Rule (e.g., 70% Rule)</h3>
-                        <p class="text-sm text-gray-400 mb-4">
-                            The 70% rule is a common guideline stating you should pay no more than 70% of the ARV, *minus* rehab costs. 
-                            <span class="font-bold">Increasing the %</span> is more aggressive (less profit margin). 
-                            <span class="font-bold">Decreasing it</span> is more conservative (more profit margin).
-                        </p>
-
-                        <div class="input-group">
-                            <label for="mao-rule-arv" class="label">After Repair Value (ARV)</label>
-                            <input type="text" id="mao-rule-arv" class="input" placeholder="e.g., 400,000" oninput="formatCurrency(this)">
+                
+                <!-- ===== AI Rehab Breakdown Modal ===== -->
+                <div id="rehab-modal" class="modal-overlay">
+                    <div class="modal-content" style="max-width: 600px;">
+                        <div class="modal-header">
+                            <h3 class="modal-title">AI Rehab Breakdown</h3>
+                            <span id="rehab-modal-close" class="modal-close">&times;</span>
                         </div>
-                        <div class="input-group">
-                            <label for="mao-rule-rehab" class="label">Total Rehab Costs</label>
-                            <input type="text" id="mao-rule-rehab" class="input" placeholder="e.g., 40,000" oninput="formatCurrency(this)">
-                        </div>
-                        <div class="input-group">
-                            <label for="mao-rule-slider" class="label">Flip Rule Percentage: <span id="mao-rule-percent" class="font-bold text-cyan-400">70%</span></label>
-                            <input type="range" id="mao-rule-slider" min="50" max="100" value="70" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer range-lg"
-                                style="--thumb-color: var(--primary-color); --track-color: var(--bg-lighter);">
-                        </div>
-                        <div class="results-box mt-4">
-                            <div class="result-line">
-                                <span class="result-line-label text-lg">Max Allowable Offer</span>
-                                <span class="result-line-value text-2xl text-cyan-400" id="mao-rule-result">---</span>
+                        <div class="modal-body">
+                            <div class="input-group">
+                                <label for="rehab-description" class="label">Describe the Rehab</label>
+                                <textarea id="rehab-description" class="input" rows="3" placeholder="e.g., Full kitchen gut, 2 new baths, new paint and flooring, roof repair..."></textarea>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Detailed MAO (Based on Desired Profit) -->
-                    <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                        <h3 class="text-xl font-semibold mb-4 text-cyan-400">Detailed MAO (By Desired Profit)</h3>
-                        <div class="input-group">
-                            <label for="mao-profit-arv" class="label">After Repair Value (ARV)</Dlabel>
-                            <input type="text" id="mao-profit-arv" class="input" placeholder="e.g., 400,000" oninput="formatCurrency(this)">
-                        </div>
-                        <div class="input-group">
-                            <label for="mao-profit-rehab" class="label">Total Rehab Costs</label>
-                            <input type="text" id="mao-profit-rehab" class="input" placeholder="e.g., 40,000" oninput="formatCurrency(this)">
-                        </div>
-                        <div class="input-group">
-                            <label for="mao-profit-holding" class="label">Total Holding & Selling Costs</label>
-                            <input type="text" id="mao-profit-holding" class="input" placeholder="e.g., 27,000" oninput="formatCurrency(this)">
-                        </div>
-                        <div class="input-group">
-                            <label for="mao-profit-desired" class="label">Desired Profit ($)</label>
-                            <input type="text" id="mao-profit-desired" class="input" placeholder="e.g., 50,000" oninput="formatCurrency(this)">
-                        </div>
-                        
-                        <div class="results-box mt-4">
-                            <div class="result-line">
-                                <span class="result-line-label text-lg">Max Allowable Offer</span>
-                                <span class="result-line-value text-2xl text-cyan-400" id="mao-profit-result">---</span>
+                            <button id="ai-rehab-btn" class="btn btn-primary mt-4 w-full">
+                                <span class="spinner"></span>
+                                <span>Generate Breakdown</span>
+                            </button>
+                            
+                            <div id="ai-rehab-output" class="ai-output-box" style="display: none;">
+                                <pre id="ai-rehab-content" class="ai-output-content"></pre>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div> <!-- End MAO Calculator Tab -->
 
-            <!-- ===== AI Market Analyzer Tab ===== -->
-            <div id="market-analyzer" class="tab-pane">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- AI Neighborhood Analyzer -->
-                    <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                        <h3 class="text-xl font-semibold mb-4 text-cyan-400">AI Neighborhood Analyzer</h3>
-                        <p class="text-sm text-gray-400 mb-4">Enter a Zip Code or Address to get an AI-powered analysis of the local market, including trends, schools, and amenities.</p>
-                        <div class="input-group">
-                            <label for="ai-market-address" class="label">Zip Code or Full Address</label>
-                            <input type="text" id="ai-market-address" class="input" placeholder="e.g., 80202 or 123 Main St, Denver, CO">
+                <!-- ===== Tab Pane: MAO Calculator ===== -->
+                <div id="mao-calculator" class="tab-pane">
+                    <div class="grid-container">
+                        <!-- Quick MAO (70% Rule) -->
+                        <div class="result-box">
+                            <h3 class="result-box-title">Quick MAO Rule (Slider)</h3>
+                            <p class="text-xs text-secondary mb-4">
+                                The "70% Rule" is a common baseline. It means your offer should be 70% of the ARV minus rehab costs.
+                                <br>
+                                <strong>Higher %</strong> = Less profit, but a more competitive offer.
+                                <br>
+                                <strong>Lower %</strong> = More profit, but a less competitive offer.
+                            </p>
+                            <div class="input-group mb-4">
+                                <label for="mao-rule-arv" class="label">After Repair Value (ARV)</label>
+                                <input type="text" id="mao-rule-arv" class="input" placeholder="e.g., 400,000" oninput="formatCurrency(this)">
+                            </div>
+                            <div class="input-group mb-4">
+                                <label for="mao-rule-rehab" class="label">Rehab Costs</label>
+                                <input type="text" id="mao-rule-rehab" class="input" placeholder="e.g., 50,000" oninput="formatCurrency(this)">
+                            </div>
+                            <div class="input-group mb-4">
+                                <label for="mao-rule-slider" class="label">ARV Percentage: <span id="mao-rule-percent" class="text-primary font-bold">70%</span></label>
+                                <input type="range" id="mao-rule-slider" class="slider" min="50" max="100" value="70">
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-gray-700">
+                                <div class="result-line" style="border-bottom: none;">
+                                    <span class="result-line-label">Max Allowable Offer</span>
+                                    <span id="mao-rule-result" class="result-line-value text-2xl profit">$0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MAO by Desired Profit -->
+                        <div class="result-box">
+                            <h3 class="result-box-title">MAO by Desired Profit</h3>
+                            <div class="input-group mb-4">
+                                <label for="mao-profit-arv" class="label">After Repair Value (ARV)</label>
+                                <input type="text" id="mao-profit-arv" class="input" placeholder="e.g., 400,000" oninput="formatCurrency(this)">
+                            </div>
+                            <div class="input-group mb-4">
+                                <label for="mao-profit-rehab" class="label">Rehab Costs</label>
+                                <input type="text" id="mao-profit-rehab" class="input" placeholder="e.g., 50,000" oninput="formatCurrency(this)">
+                            </div>
+                            <div class="input-group mb-4">
+                                <label for="mao-profit-holding" class="label">Est. Holding & Selling Costs</label>
+                                <input type="text" id="mao-profit-holding" class="input" placeholder="e.g., 40,000" oninput="formatCurrency(this)">
+                            </div>
+                            <div class="input-group mb-4">
+                                <label for="mao-profit-desired" class="label">Desired Profit</label>
+                                <input type="text" id="mao-profit-desired" class="input" placeholder="e.g., 60,000" oninput="formatCurrency(this)">
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-gray-700">
+                                <div class="result-line" style="border-bottom: none;">
+                                    <span class="result-line-label">Max Allowable Offer</span>
+                                    <span id="mao-profit-result" class="result-line-value text-2xl profit">$0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== Tab Pane: AI Market Analyzer ===== -->
+                <div id="ai-market-analyzer" class="tab-pane">
+                    <!-- AI Market Analysis -->
+                    <div class="result-box mb-6">
+                        <h3 class="result-box-title">AI Neighborhood Analyzer</h3>
+                        <p class="text-xs text-secondary mb-4">Enter a zip code or full address to get an AI-powered analysis of the local market, schools, and amenities.</p>
+                        <div class="input-group mb-4">
+                            <label for="ai-market-address" class="label">Address or Zip Code</label>
+                            <input type="text" id="ai-market-address" class="input" placeholder="e.g., 123 Main St, Denver, CO or 80210">
                         </div>
                         <button id="ai-market-btn" class="btn btn-primary w-full">
-                            <span class="spinner" style="display: none;"></span>
-                            ✨ Analyze Market
+                            <span class="spinner"></span>
+                            <span>✨ Analyze Market</span>
                         </button>
-                        <div id="ai-market-output" class="mt-6" style="display: none;">
-                            <h4 class="text-lg font-semibold mb-2 text-cyan-400">AI Market Analysis</h4>
-                            <p id="ai-market-content" class="text-gray-300 whitespace-pre-wrap p-4 bg-gray-900 rounded"></p>
+                        <div id="ai-market-output" class="ai-output-box" style="display: none;">
+                            <pre id="ai-market-content" class="ai-output-content"></pre>
                         </div>
                     </div>
 
-                    <!-- Market Velocity (Sell-Through Rate) -->
-                    <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                        <h3 class="text-xl font-semibold mb-4 text-cyan-400">Market Velocity (Sell-Through Rate)</h3>
+                    <!-- Market Velocity -->
+                    <div class="result-box">
+                        <h3 class="result-box-title">Market Velocity (Sell-Through Rate)</h3>
+                        <p class="text-xs text-secondary mb-4">This measures market "hotness." A high rate means it's a seller's market (homes sell fast). A low rate means it's a buyer's market (homes sit).</p>
                         
                         <!-- AI Velocity Search -->
-                        <div class="p-3 bg-gray-900 rounded-lg border border-gray-700 mb-4">
-                            <h4 class="text-lg font-semibold mb-2 text-cyan-400">AI-Powered Velocity Search</h4>
-                            <div class="input-group">
-                                <label for="ai-velocity-zip" class="label">Zip Code</label>
-                                <input type="text" id="ai-velocity-zip" class="input" placeholder="e.g., 80202">
+                        <div class="mb-4 p-4 rounded-lg bg-gray-800 border border-gray-700">
+                            <h4 class="subsection-title mt-0">AI-Powered Velocity Search</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="input-group">
+                                    <label for="ai-velocity-zip" class="label">Zip Code</label>
+                                    <input type="text" id="ai-velocity-zip" class="input" placeholder="e.g., 80210">
+                                </div>
+                                <div class="input-group">
+                                    <label for="ai-velocity-type" class="label">Property Type (Optional)</label>
+                                    <input type="text" id="ai-velocity-type" class="input" placeholder="e.g., 3-bed homes">
+                                </div>
                             </div>
-                            <div class="input-group">
-                                <label for="ai-velocity-type" class="label">Property Type (Optional)</label>
-                                <input type="text" id="ai-velocity-type" class="input" placeholder="e.g., 3-bed single-family homes">
-                            </div>
-                            <button id="ai-velocity-btn" class="btn btn-primary w-full">
-                                <span class="spinner" style="display: none;"></span>
-                                ✨ AI-Powered Velocity Search
+                            <button id="ai-velocity-btn" class="btn btn-primary w-full mt-4">
+                                <span class="spinner"></span>
+                                <span>✨ AI-Powered Velocity Search</span>
                             </button>
-                            <p id="ai-velocity-status" class="text-sm text-cyan-400 text-center mt-2" style="display: none;"></p>
+                            <p id="ai-velocity-status" class="text-sm text-center mt-2" style="display: none;"></p>
                         </div>
-                        
-                        <!-- Manual Velocity Calculator -->
-                        <div class="input-group">
-                            <label for="velocity-sold" class="label">Homes Sold (Last 30 Days)</label>
-                            <input type="number" id="velocity-sold" class="input" placeholder="e.g., 15">
-                        </div>
-                        <div class="input-group">
-                            <label for="velocity-inventory" class="label">Total Homes For Sale</label>
-                            <input type="number" id="velocity-inventory" class="input" placeholder="e.g., 100">
-                        </div>
-                        <button id="velocity-calculate-btn" class="btn btn-secondary w-full">Calculate Rate</button>
 
-                        <div id="velocity-results-container" class="results-box mt-4" style="display: none;">
-                            <div class="result-line">
-                                <span class="result-line-label text-lg">Sell-Through Rate</span>
-                                <span class="result-line-value text-2xl text-cyan-400" id="velocity-rate-result">---</span>
+                        <!-- Manual Velocity Calculator -->
+                        <h4 class="subsection-title">Manual Calculator</h4>
+                        <div class="grid-container">
+                            <div class="input-group">
+                                <label for="velocity-sold" class="label">Homes Sold (Last 30 Days)</label>
+                                <input type="number" id="velocity-sold" class="input" placeholder="e.g., 20">
                             </div>
+                            <div class="input-group">
+                                <label for="velocity-inventory" class="label">Total Homes for Sale</label>
+                                <input type="number" id="velocity-inventory" class="input" placeholder="e.g., 100">
+                            </div>
+                        </div>
+                        <button id="velocity-calculate-btn" class="btn btn-secondary mt-4">Calculate Rate</button>
+                        
+                        <div id="velocity-results-container" class="mt-4" style="display: none;">
                             <div class="result-line">
-                                <span class="result-line-label text-lg">Market Type</span>
-                                <span class="result-line-value text-2xl" id="velocity-market-result">---</span>
+                                <span class="result-line-label">Sell-Through Rate</span>
+                                <span id="velocity-rate-result" class="result-line-value text-2xl profit">0.0%</span>
+                            </div>
+                            <div class="result-line" style="border-bottom: none;">
+                                <span class="result-line-label">Market Type</span>
+                                <span id="velocity-market-result" class="result-line-value text-2xl profit">---</span>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div> <!-- End AI Market Analyzer Tab -->
-
-            <!-- ===== What If? Tab ===== -->
-            <div id="what-if" class="tab-pane">
-                <h2 class="text-2xl font-semibold mb-4 text-cyan-400">"What If?" Sensitivity Analysis</h2>
-                <p class="text-gray-400 mb-6">See how your profit and ROI change based on different ARV and Rehab Cost scenarios. First, calculate a deal on the "Deal Calculator" tab, then come back here to analyze it.</p>
                 
-                <div class="results-box">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div class="text-center p-3 bg-gray-900 rounded">
-                            <span class="text-sm text-gray-400 block">Original ARV</span>
-                            <span id="what-if-arv-base" class="text-lg font-bold text-cyan-400">---</span>
-                        </div>
-                        <div class="text-center p-3 bg-gray-900 rounded">
-                            <span class="text-sm text-gray-400 block">Original Rehab</span>
-                            <span id="what-if-rehab-base" class="text-lg font-bold text-cyan-400">---</span>
-                        </div>
-                        <div class="text-center p-3 bg-gray-900 rounded">
-                            <span class="text-sm text-gray-400 block">Original Profit</span>
-                            <span id="what-if-profit-base" class="text-lg font-bold text-cyan-400">---</span>
-                        </div>
-                    </div>
+                <!-- ===== Tab Pane: What If? ===== -->
+                <div id="what-if" class="tab-pane">
+                    <h3 class="section-title">"What If?" Sensitivity Analysis</h3>
+                    <p class="text-sm text-secondary mb-6">This table shows how your profit changes if your ARV or Rehab Costs are different from your estimate. (Calculates automatically after a deal is run).</p>
                     
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="border-b border-gray-700">
-                                    <th class="p-3 text-cyan-400">Profit / ROI</th>
-                                    <th id="what-if-arv-low" class="p-3 text-center">ARV -5%</th>
-                                    <th id="what-if-arv-mid" class="p-3 text-center font-bold text-cyan-400">Target ARV</th>
-                                    <th id="what-if-arv-high" class="p-3 text-center">ARV +5%</th>
+                                <tr class="bg-gray-800">
+                                    <th class="p-3 border border-gray-700">Profit</th>
+                                    <th class="p-3 border border-gray-700 text-center">Rehab -10%</th>
+                                    <th class="p-3 border border-gray-700 text-center">Rehab (Base)</th>
+                                    <th class="p-3 border border-gray-700 text-center">Rehab +10%</th>
+                                    <th class="p-3 border border-gray-700 text-center">Rehab +20%</th>
                                 </tr>
                             </thead>
-                            <tbody id="what-if-table-body" class="divide-y divide-gray-700">
-                                <!-- Rows will be generated by JS -->
+                            <tbody>
+                                <tr class="bg-gray-700">
+                                    <td class="p-3 border border-gray-700 font-bold">ARV +5%</td>
+                                    <td id="what-if-arv-high-rehab-low" class="p-3 border border-gray-700 text-center">---</td>
+                                    <td id="what-if-arv-high-rehab-mid" class="p-3 border border-gray-700 text-center">---</td>
+                                    <td id="what-if-arv-high-rehab-high" class="p-3 border border-gray-700 text-center">---</td>
+                                    <td id="what-if-arv-high-rehab-over" class="p-3 border border-gray-700 text-center">---</td>
+                                </tr>
+                                <tr class="bg-gray-700/50">
+                                    <td class="p-3 border border-gray-700 font-bold">ARV (Base)</td>
+                                    <td id="what-if-arv-mid-rehab-low" class="p-3 border border-gray-700 text-center">---</td>
+                                    <td id="what-if-profit-base" class="p-3 border border-gray-700 text-center font-bold text-lg bg-cyan-900/30">---</td>
+                                    <td id="what-if-arv-mid-rehab-high" class="p-3 border border-gray-700 text-center">---</td>
+                                    <td id="what-if-arv-mid-rehab-over" class="p-3 border border-gray-700 text-center">---</td>
+                                </tr>
+                                <tr class="bg-gray-700">
+                                    <td class="p-3 border border-gray-700 font-bold">ARV -5%</td>
+                                    <td id="what-if-arv-low-rehab-low" class="p-3 border border-gray-700 text-center">---</td>
+                                    <td id="what-if-arv-low-rehab-mid" class="p-3 border border-gray-700 text-center">---</td>
+                                    <td id="what-if-arv-low-rehab-high" class="p-3 border border-gray-700 text-center">---</td>
+                                    <td id="what-if-arv-low-rehab-over" class="p-3 border border-gray-700 text-center">---</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div> <!-- End What If? Tab -->
-
-            <!-- ===== Batch Analyzer Tab ===== -->
-            <div id="batch-analyzer" class="tab-pane">
-                <h2 class="text-2xl font-semibold mb-4 text-cyan-400">Batch Deal Analyzer</h2>
-                <p class="text-gray-400 mb-4">Upload a CSV file of properties to analyze them in bulk. This tool will run the first 10 properties through the AI Comp Finder and Deal Calculator to find the best deals.</p>
                 
-                <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                    <div class="input-group">
-                        <label class="label">1. Upload your CSV File</label>
-                        <div class="flex items-center">
-                            <div class="file-input-wrapper">
-                                <button class="file-input-btn">Choose File</button>
-                                <input type="file" id="csv-file-input" accept=".csv">
+                <!-- ===== Tab Pane: Batch Analyzer ===== -->
+                <div id="batch-analyzer" class="tab-pane">
+                    <h3 class="section-title">Batch Deal Analyzer</h3>
+                    <p class="text-sm text-secondary mb-4">Upload a CSV file of properties to run a high-level AI analysis on the first 10 deals. Requires `Address`, `Zip`, `Sq. Ft.`, and a `Value` (like Market Value Estimate).</p>
+
+                    <div class="result-box max-w-md mx-auto">
+                        <div class="input-group mb-4">
+                            <label class="label">1. Upload CSV File</label>
+                            <div class="flex items-center">
+                                <label for="csv-file-input" class="btn btn-secondary cursor-pointer">
+                                    <span>Choose File</span>
+                                </label>
+                                <input type="file" id="csv-file-input" class="file-upload-input" accept=".csv">
+                                <span id="file-name" class="text-sm ml-3 text-secondary">No file chosen</span>
                             </div>
-                            <span id="file-name" class="ml-4 text-gray-400">No file chosen</span>
+                        </div>
+
+                        <div class="input-group mb-4">
+                            <label class="label">2. Map CSV Columns</label>
+                            <button id="map-columns-btn" class="btn btn-secondary w-full" disabled>
+                                <span>Map Columns</span>
+                            </button>
+                        </div>
+                        
+                        <div class="input-group mb-4">
+                            <label for="batch-rehab-cost" class="label">3. Default Rehab Cost ($)</label>
+                            <input type="text" id="batch-rehab-cost" class="input" placeholder="e.g., 50,000" oninput="formatCurrency(this)">
+                        </div>
+
+                        <button id="run-batch-btn" class="btn btn-primary w-full" disabled>
+                            <span class="spinner"></span>
+                            <span>Analyze First 10 Properties</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Batch Results -->
+                    <div id="batch-results-container" class="mt-6" style="display: none;">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="section-title mb-0">Batch Analysis Results</h3>
+                            <button id="download-batch-csv-btn" class="btn btn-secondary btn-sm">
+                                <span>Download Results (CSV)</span>
+                            </button>
+                        </div>
+                        <p id="batch-status-text" class="text-sm text-secondary text-center my-2"></p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead id="batch-results-table-head" class="bg-gray-800">
+                                    <!-- Headers injected by JS -->
+                                </thead>
+                                <tbody id="batch-results-table-body" class="bg-gray-700/50">
+                                    <!-- Rows injected by JS -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+                </div>
 
-                    <div class="input-group">
-                        <label for="batch-rehab-cost" class="label">2. Enter Default Rehab Cost (per property)</label>
-                        <input type="text" id="batch-rehab-cost" class="input max-w-xs" placeholder="e.g., 40,000" oninput="formatCurrency(this)">
-                    </div>
-
-                    <div class="input-group">
-                        <label class="label">3. Map Your CSV Columns</label>
-                        <button id="map-columns-btn" class="btn btn-secondary" disabled>Map CSV Columns</button>
-                    </div>
-
-                    <div class="input-group">
-                        <label class="label">4. Run Analyzer</label>
-                        <button id="run-batch-btn" class="btn btn-primary" disabled>
-                            <span class="spinner" style="display: none;"></span>
-                            Analyze First 10 Properties
-                        </button>
+                <!-- ===== Tab Pane: Saved Deals ===== -->
+                <div id="saved-deals" class="tab-pane">
+                    <h3 class="section-title">Saved Deals</h3>
+                    <div id="saved-deals-container" class="deal-card-grid">
+                        <p id="no-saved-deals" class="text-secondary text-center">You have no saved deals. Calculate a deal and click "Save Deal" to add one here.</p>
+                        <!-- Saved deal cards injected by JS -->
                     </div>
                 </div>
 
-                <div id="batch-results-container" class="mt-6" style="display: none;">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-semibold text-cyan-400">Batch Analysis Results</h3>
-                        <button id="download-batch-csv-btn" class="btn btn-success">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
-                                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                            </svg>
-                            Download Results
-                        </button>
-                    </div>
-                    <p id="batch-status-text" class="text-cyan-400 mb-4"></p>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead id="batch-results-table-head">
-                                <!-- JS will populate this -->
-                            </thead>
-                            <tbody id="batch-results-table-body" class="divide-y divide-gray-700">
-                                <!-- JS will populate this -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div> <!-- End Batch Analyzer Tab -->
+            </div> <!-- End .tab-content -->
+        </div> <!-- End .calculator-wrapper -->
+    </div> <!-- End .container -->
 
-            <!-- ===== Saved Deals Tab ===== -->
-            <div id="saved-deals" class="tab-pane">
-                <h2 class="text-2xl font-semibold mb-4 text-cyan-400">Saved Deals</h2>
-                <div id="saved-deals-container">
-                    <!-- Saved deal cards will be injected here -->
-                    <p id="no-saved-deals" class="text-gray-400">You have no saved deals. Calculate a deal and click "Save Deal" to add one.</p>
-                </div>
-            </div> <!-- End Saved Deals Tab -->
-
-        </div> <!-- End Tab Content -->
-
-    </div> <!-- End Container -->
-
-    <!-- ===== Save Deal Modal ===== -->
-    <div id="save-deal-modal" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
-            <div class="modal-header">
-                <h2 class="modal-title">Save Deal</h2>
-                <span class="modal-close" id="save-deal-modal-close">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="input-group">
-                    <label for="save-deal-name" class="label">Deal Name (e.g., Address)</label>
-                    <input type="text" id="save-deal-name" class="input" placeholder="e.g., 123 Main St">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="confirm-save-deal-btn" class="btn btn-success">Save</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== How to Use Modal ===== -->
-    <div id="how-to-use-modal" class="modal">
+    <!-- ===== Modals ===== -->
+    
+    <!-- How to Use Modal -->
+    <div id="how-to-use-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">How to Use This Calculator</h2>
-                <span class="modal-close" id="how-to-use-modal-close">&times;</span>
+                <h3 class="modal-title">How to Use This Calculator</h3>
+                <span id="how-to-use-modal-close" class="modal-close">&times;</span>
             </div>
             <div class="modal-body">
-                <p class="text-lg text-gray-300">Welcome to the Homeland Property Flip Calculator! This is an all-in-one tool designed to help you analyze potential real estate deals from start to finish.</p>
-                
-                <h4 class="text-cyan-400 text-xl font-semibold mt-6 mb-2">Core Workflow (1-2-3)</h4>
-                <ol class="list-decimal pl-6 text-gray-300 space-y-2">
-                    <li><strong>Start in "Deal Calculator":</strong> Enter your <code>Purchase Price</code>, <code>Rehab Costs</code>, and <code>ARV</code>.
-                        <ul>
-                            <li>Not sure on ARV? Click the <code>Calculator</code> button next to ARV to open the <strong>ARV Comps Calculator</strong>.</li>
-                            <li>Not sure on Rehab? Click the <code>AI</code> button next to Rehab Costs to open the <strong>AI Rehab Breakdown</strong>.</li>
-                        </ul>
-                    </li>
-                    <li><strong>Fill Out Costs:</strong> Enter your <code>Financing</code>, <code>Holding</code>, and <code>Selling Costs</code>.</li>
-                    <li><strong>Calculate & Analyze:</strong> Click <code>Calculate Deal</code> to see your Profit, ROI, and Annualized ROI. From here, you can use the other tabs to analyze the deal further.</li>
+                <h4 class="subsection-title">Core Workflow (1-2-3)</h4>
+                <ol class="list-decimal list-inside text-secondary mb-4 space-y-2">
+                    <li>Go to the <strong>Deal Calculator</strong> tab. Fill in your known numbers (Purchase Price, Rehab Costs, etc.).</li>
+                    <li>If you don't know the ARV, click the <strong>✨ Comps Calculator</strong> button. Enter the property's address and use the <strong>✨ AI Comp Finder</strong> to get an estimated ARV. Click "Use this ARV" to send it back.</li>
+                    <li>Click the main <strong>Calculate Deal</strong> button. Your results (Profit, ROI, Cash Needed) will appear on the right. From there, you can save the deal or check the other tabs for deeper analysis.</li>
                 </ol>
 
-                <h4 class="text-cyan-400 text-xl font-semibold mt-6 mb-2">Feature Breakdown by Tab</h4>
-
-                <h5 class="text-cyan-300 text-lg font-semibold mt-4">1. Deal Calculator Tab</h5>
+                <h4 class="subsection-title">Tab-by-Tab Feature Guide</h4>
                 <ul>
-                    <li><strong>Main Calculator:</strong> The core of the tool. Enter all your numbers here to get a detailed breakdown of costs, profit, and returns.</li>
-                    <li><strong>ARV Comps Calculator:</strong> A modal tool to help you find the ARV.
+                    <li><strong>Deal Calculator (Main Tab)</strong>
                         <ul>
-                            <li><strong>AI Comp Finder:</strong> Enter a property address and click "Find Comps with AI". It will use Google Search to find recent comps, auto-fill the table, and calculate an ARV for you.</li>
-                            <li><strong>Manual Entry:</strong> You can also manually add your own comps to calculate an ARV based on price per square foot.</li>
+                            <li><strong>Core Numbers:</strong> Your main inputs for a single deal.</li>
+                            <li><strong>Financing Type:</strong> Select "All Cash" or "Loan" to see how financing impacts your cash needed and profit.</li>
+                            <li><strong>Results:</strong> Shows your Profit, ROI, Annualized ROI, and a full cost breakdown.</li>
+                            <li><strong>✨ Get AI Deal Summary:</strong> After calculating, get a plain-English analysis of the deal's strengths and weaknesses.</li>
+                            <li><strong>💾 Save Deal:</strong> Saves the current deal to the "Saved Deals" tab.</li>
+                            <li><strong>🖨️ Print Report:</strong> Generates a clean, printable report of your deal.</li>
                         </ul>
                     </li>
-                    <li><strong>AI Rehab Breakdown:</strong> A simple AI tool. Describe your renovation (e.g., "new kitchen and 2 baths") and it provides a suggested budget checklist (e.g., "Kitchen: 40%, Bathrooms: 30%...").</li>
-                    <li><strong>AI Deal Summary:</strong> After calculating, click this to get a natural-language summary of the deal's strengths and weaknesses.</li>
-                    <li><strong>Save Deal:</strong> Saves all your inputs and results to a "deal card" in the "Saved Deals" tab.</li>
-                </ul>
-
-                <h5 class="text-cyan-300 text-lg font-semibold mt-4">2. MAO Calculator Tab</h5>
-                <ul>
-                    <li><strong>Quick MAO Rule:</strong> Uses a percentage-based rule (like the 70% Rule) to find a quick "Max Allowable Offer". Use the slider to adjust your risk.</li>
-                    <li><strong>Detailed MAO:</strong> A more advanced calculation. It works *backwards* from your <code>Desired Profit</code> to tell you the most you can pay for the property.</li>
-                </ul>
-
-                <h5 class="text-cyan-300 text-lg font-semibold mt-4">3. AI Market Analyzer Tab</h5>
-                <ul>
-                    <li><strong>AI Neighborhood Analyzer:</strong> Enter a zip code or address to get an AI-powered report on market trends, schools, and local amenities.</li>
-                    <li><strong>AI-Powered Velocity Search:</strong> The fastest way to gauge the market. Enter a zip code, and the AI will search for the number of homes sold vs. for sale to calculate the <strong>Sell-Through Rate</strong>.</li>
-                    <li><strong>Manual Sell-Through Rate:</strong> If you have your own numbers, you can enter them here to see the market velocity (i.e., "Hot Seller's Market").</li>
-                </ul>
-
-                <h5 class="text-cyan-300 text-lg font-semibold mt-4">4. What If? Tab</h5>
-                <ul>
-                    <li><strong>Sensitivity Analysis:</strong> After you calculate a deal, this tab shows you a table of how your profit and ROI would change if your ARV is lower or your rehab costs are higher than expected. It's a great way to visualize your risk.</li>
-                </ul>
-                
-                <h5 class="text-cyan-300 text-lg font-semibold mt-4">5. Batch Analyzer Tab</h5>
-                <ul>
-                    <li><strong>Bulk Analysis Tool:</strong> This is for power users. Upload a CSV of properties, map your columns (e.g., map your "Address" column to the "Full Address" field), and click "Analyze". The tool will run the first 10 properties through the AI Comp Finder and Deal Calculator, then present the results in a table.</li>
-                    <li><strong>Download Results:</strong> You can download this new, enriched data as a CSV file to sort and find the best deals in your list.</li>
-                </ul>
-                
-                <h5 class="text-cyan-300 text-lg font-semibold mt-4">6. Saved Deals Tab</h5>
-                <ul>
-                    <li><strong>Your Deal Pipeline:</strong> Every deal you save from the main calculator appears here as a card. You can quickly see the name, profit, and ROI.</li>
-                    <li><strong>Load / Delete:</strong> Click "Load" to instantly repopulate the entire calculator with that deal's data, or click "Delete" to remove it.</li>
+                    <li><strong>MAO Calculator</strong>
+                        <ul>
+                            <li><strong>Quick MAO Rule:</strong> Use the slider to find your Max Allowable Offer (MAO) based on a simple percentage of the ARV (e.g., the "70% Rule").</li>
+                            <li><strong>MAO by Desired Profit:</strong> Calculates your MAO based on your *exact* profit goal.</li>
+                        </ul>
+                    </li>
+                    <li><strong>AI Market Analyzer</strong>
+                        <ul>
+                            <li><strong>✨ AI Neighborhood Analyzer:</strong> Uses Google Search to give you a qualitative summary of a zip code, including market trends, school quality, and local amenities.</li>
+                            <li><strong>✨ AI-Powered Velocity Search:</strong> Automatically finds the "Sell-Through Rate" (market hotness) for a zip code.</li>
+                            <li><strong>Manual Velocity Calculator:</strong> Lets you manually calculate the Sell-Through Rate if you already have the numbers.</li>
+                        </ul>
+                    </li>
+                    <li><strong>What If? (Sensitivity)</strong>
+                        <ul>
+                            <li>This "what if" table automatically shows you how your profit would change if your ARV is lower or your rehab costs are higher than you estimated.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Batch Analyzer</strong>
+                        <ul>
+                            <li>Lets you upload a CSV file of *thousands* of properties.</li>
+                            <li><strong>Map Columns:</strong> Tell the calculator which columns in your file are the Address, Zip, Sq. Ft., and Current Value.</li>
+                            <li><strong>Analyze First 10:</strong> Automatically runs an AI-powered analysis (finds ARV, calculates profit/ROI) on the first 10 properties in your list.</li>
+                            <li><strong>Download Results:</strong> Saves a new CSV file with all the analysis columns added.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Saved Deals</strong>
+                        <ul>
+                            <li>View all the deals you've saved. You can "Load" any deal to bring its numbers back into the calculator or "Delete" it.</li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
             <div class="modal-footer">
@@ -1096,64 +1258,83 @@
         </div>
     </div>
     
-    <!-- ===== Batch Map Modal ===== -->
-    <div id="batch-map-modal" class="modal">
-        <div class="modal-content">
+    <!-- Save Deal Modal -->
+    <div id="save-deal-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <h2 class="modal-title">Map Your CSV Columns</h2>
-                <span class="modal-close" id="batch-map-modal-close">&times;</span>
+                <h3 class="modal-title">Save Deal</h3>
+                <span id="save-deal-modal-close" class="modal-close">&times;</span>
             </div>
             <div class="modal-body">
-                <p class="text-gray-400 mb-4">Tell the calculator which columns in your CSV file correspond to these key fields. This only needs to be set once per file upload.</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6">
-                    <div class="input-group">
-                        <label class="label text-cyan-400">Address (Option 1)</label>
-                        <select id="map-full-address" class="select map-select"></select>
-                        <p class="text-xs text-gray-500 mt-1">Use this if your file has the full address in one column (e.g., "123 Main St, Denver, CO 80202").</p>
-                    </div>
+                <div class="input-group">
+                    <label for="save-deal-name" class="label">Deal Name or Address</label>
+                    <input type="text" id="save-deal-name" class="input" placeholder="e.g., 123 Main St Flip">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm-save-deal-btn" class="btn btn-primary">Save Deal</button>
+            </div>
+        </div>
+    </div>
 
-                    <div class="border-t border-gray-700 md:border-t-0 md:border-l md:pl-6 border-dashed">
-                        <label class="label text-cyan-400">Address (Option 2)</label>
-                        <div class="input-group">
-                            <label for="map-street-address" class="label text-sm">Street Address</label>
-                            <select id="map-street-address" class="select map-select"></select>
-                        </div>
-                        <div class="input-group">
-                            <label for="map-city" class="label text-sm">City</label>
-                            <select id="map-city" class="select map-select"></select>
-                        </div>
-                        <div class="input-group">
-                            <label for="map-state" class="label text-sm">State</label>
-                            <select id="map-state" class="select map-select"></select>
-                        </div>
-                         <p class="text-xs text-gray-500 mt-1">Use this if your address is broken into multiple columns.</p>
+    <!-- Batch Map Modal -->
+    <div id="batch-map-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Map CSV Columns</h3>
+                <span id="batch-map-modal-close" class="modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p class="text-sm text-secondary mb-4">Tell the calculator which columns in your CSV file match these required fields.</p>
+                
+                <h4 class="subsection-title">Property Location (Use Option 1 or 2)</h4>
+                <div class="p-4 border border-gray-700 rounded-lg">
+                    <label class="label mb-2"><strong>Option 1: Full Address</strong></label>
+                    <div class="input-group">
+                        <label for="map-full-address" class="label text-xs">Full Address</label>
+                        <select id="map-full-address" class="select map-select"></select>
                     </div>
                 </div>
 
-                <hr class="border-gray-700 my-4">
+                <p class="text-center text-secondary my-2">OR</p>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                <div class="p-4 border border-gray-700 rounded-lg">
+                    <label class="label mb-2"><strong>Option 2: Separate Fields</strong></label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="input-group">
+                            <label for="map-street-address" class="label text-xs">Street Address</label>
+                            <select id="map-street-address" class="select map-select"></select>
+                        </div>
+                        <div class="input-group">
+                            <label for="map-city" class="label text-xs">City</label>
+                            <select id="map-city" class="select map-select"></select>
+                        </div>
+                        <div class="input-group">
+                            <label for="map-state" class="label text-xs">State</label>
+                            <select id="map-state" class="select map-select"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="subsection-title mt-6">Required Property Details</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="input-group">
-                        <label for="map-zip-code" class="label">Zip Code</label>
+                        <label for="map-zip-code" class="label text-xs">Zip Code</label>
                         <select id="map-zip-code" class="select map-select"></select>
-                        <p class="text-xs text-gray-500 mt-1">Required for AI Market Analyzer.</p>
                     </div>
                     <div class="input-group">
-                        <label for="map-sqft" class="label">Square Footage</label>
+                        <label for="map-sqft" class="label text-xs">Square Footage</label>
                         <select id="map-sqft" class="select map-select"></select>
-                        <p class="text-xs text-gray-500 mt-1">Required for ARV calculation.</p>
                     </div>
                     <div class="input-group">
-                        <label for="map-purchase-price" class="label">Current Value / Est. Price</label>
+                        <label for="map-purchase-price" class="label text-xs">Current Value (for Purchase Price)</label>
                         <select id="map-purchase-price" class="select map-select"></select>
-                        <p class="text-xs text-gray-500 mt-1">Will be mapped to "Purchase Price".</p>
                     </div>
                 </div>
 
             </div>
             <div class="modal-footer">
-                <button id="confirm-map-btn" class="btn btn-success">Save Mapping</button>
+                <button id="confirm-map-btn" class="btn btn-primary">Confirm Mapping</button>
             </div>
         </div>
     </div>
@@ -1202,16 +1383,22 @@
         
         const formatCurrencyInput = (input) => {
             let value = input.value;
+            // Handle negative numbers
+            let isNegative = value.startsWith('-');
             let num = parseCurrency(value);
             if (isNaN(num)) {
                 input.value = '';
             } else {
-                input.value = new Intl.NumberFormat('en-US').format(num);
+                // Format the absolute value
+                let formattedValue = new Intl.NumberFormat('en-US').format(Math.abs(num));
+                // Add the negative sign back if it was there and the number isn't zero
+                input.value = isNegative && num !== 0 ? '-' + formattedValue : formattedValue;
             }
         };
 
         const toggleSpinner = (btnId, textContent, show) => {
             const btn = getById(btnId);
+            if (!btn) return;
             const spinner = btn.querySelector('.spinner');
             const text = btn.querySelector('span:not(.spinner)');
             
@@ -1232,7 +1419,7 @@
         const showToast = (message, type = 'success') => {
             const toast = document.createElement('div');
             toast.textContent = message;
-            toast.className = 'fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white';
+            toast.className = 'fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white z-50';
             if (type === 'success') {
                 toast.style.backgroundColor = 'var(--success-color)';
             } else if (type === 'error') {
@@ -1285,12 +1472,23 @@
             if (financingType === 'loan') {
                 loanAmount = purchasePrice * (1 - downPaymentPercent);
                 downPayment = purchasePrice * downPaymentPercent;
-                const pointsCost = (loanAmount + (rehabCosts > 0 ? rehabCosts : 0)) * loanPoints; // Points on loan + rehab
-                const interestCost = (loanAmount * interestRate / 12) * holdingMonths;
+                // Calculate points on total loan amount (purchase loan + rehab if financed)
+                // Assuming rehab is financed if loan is chosen, common in fix/flip
+                const financedRehab = rehabCosts; // Assuming 100% rehab finance
+                const totalLoanAmount = loanAmount + financedRehab;
+                const pointsCost = totalLoanAmount * loanPoints;
+                
+                // Interest cost calculation on outstanding balance
+                // Simple interest model for holding period
+                const interestCost = (totalLoanAmount * interestRate / 12) * holdingMonths;
                 
                 totalFinancingCosts = pointsCost + interestCost + otherClosingCosts;
+                
+                // Total cash needed = down payment + upfront closing costs + rehab (if not financed) + holding + selling
+                // Assuming rehab is NOT financed (common for total cash calculation)
                 upfrontCash = downPayment + otherClosingCosts + pointsCost;
-                totalCashNeeded = downPayment + rehabCosts + totalHoldingCosts + totalSellingCosts + interestCost + otherClosingCosts + pointsCost;
+                totalCashNeeded = upfrontCash + rehabCosts + totalHoldingCosts + interestCost;
+
             } else {
                 // All cash deal
                 totalCashNeeded = purchasePrice + rehabCosts + totalHoldingCosts + totalSellingCosts;
@@ -1300,13 +1498,13 @@
             const grossProfit = arv - totalCosts;
 
             let roi = 0;
-            if (financingType === 'loan') {
-                roi = totalCashNeeded > 0 ? grossProfit / totalCashNeeded : 0;
-            } else {
-                roi = totalCashNeeded > 0 ? grossProfit / totalCashNeeded : 0;
+            if (totalCashNeeded > 0) {
+                 roi = grossProfit / totalCashNeeded;
+            } else if (grossProfit > 0) {
+                roi = Infinity; // Handle no-money-down case
             }
             
-            const annualizedRoi = (roi / holdingMonths) * 12;
+            const annualizedRoi = (holdingMonths > 0) ? (roi / holdingMonths) * 12 : (roi > 0 ? Infinity : 0);
             const profitPerMonth = holdingMonths > 0 ? grossProfit / holdingMonths : 0;
             
             const totalInvestmentCash = purchasePrice + rehabCosts + totalHoldingCosts + totalSellingCosts;
@@ -1348,6 +1546,10 @@
             getById('total-financing-costs-result').textContent = currencyFormatter(results.totalFinancingCosts);
             getById('total-selling-costs-result').textContent = currencyFormatter(results.totalSellingCosts);
             getById('total-costs-result').textContent = currencyFormatter(results.totalCosts);
+            
+            // Profit check
+            getById('profit-check-arv').textContent = currencyFormatter(results.arv);
+            getById('profit-check-costs').textContent = currencyFormatter(results.totalCosts);
             getById('profit-check-result').textContent = currencyFormatter(results.arv - results.totalCosts);
             
             getById('results-container').style.display = 'block';
@@ -1360,6 +1562,10 @@
             getById('mao-profit-rehab').value = new Intl.NumberFormat('en-US').format(results.rehabCosts);
             const holdingAndSelling = results.totalHoldingCosts + results.totalFinancingCosts + results.totalSellingCosts;
             getById('mao-profit-holding').value = new Intl.NumberFormat('en-US').format(holdingAndSelling);
+            
+            // Trigger MAO calcs
+            calculateMaoRule();
+            calculateMaoProfit();
 
             // Trigger "What If" calculation
             calculateWhatIf();
@@ -1369,7 +1575,7 @@
         async function callGeminiAPI(userQuery, systemPrompt, jsonSchema = null, useGoogleSearch = false, retries = 3) {
             const apiKey = localStorage.getItem('geminiApiKey') || "";
             if (!apiKey) {
-                return { error: "Error: API Key is missing. Please enter your Google AI Studio API Key at the top of the calculator and click 'Save Key'." };
+                return { error: new Error("Error: API Key is missing. Please enter your Google AI Studio API Key at the top of the calculator and click 'Save Key'.") };
             }
             
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
@@ -1429,15 +1635,24 @@
                 });
 
                 if (!response.ok) {
-                    const errorBody = await response.json();
-                    console.error("Gemini API Error Body:", errorBody);
+                    let errorBody;
+                    try {
+                        errorBody = await response.json();
+                        console.error("Gemini API Error Body:", errorBody);
+                    } catch (e) {
+                        console.error("Could not parse error body:", e);
+                        errorBody = { error: { message: "An unknown error occurred." } };
+                    }
+
                     let errorMsg = `HTTP error! status: ${response.status}`;
-                    
                     const errorReason = errorBody?.error?.details?.[0]?.reason;
+
                     if (response.status === 400 && errorReason === "API_KEY_INVALID") {
                         errorMsg = "Error: API Key Not Valid. The key you entered is incorrect or has expired. Please get a new key from Google AI Studio.";
                     } else if (response.status === 401 || response.status === 403) {
                         errorMsg = "Error: API Key is invalid or unauthorized. Please check your Google AI Studio API Key and permissions.";
+                    } else if (errorBody?.error?.message) {
+                        errorMsg = errorBody.error.message;
                     }
                     
                     return { error: new Error(errorMsg) };
@@ -1500,6 +1715,9 @@
             // Add listeners to re-calculate on change
             newRow.querySelectorAll('input').forEach(input => {
                 input.addEventListener('input', calculateArv);
+                if (input.classList.contains('comp-sqft') || input.classList.contains('comp-price')) {
+                    input.addEventListener('input', () => formatCurrencyInput(input));
+                }
             });
 
             arvComps.push(newRow); // Add to our tracked array
@@ -1594,59 +1812,36 @@
         function calculateWhatIf() {
             if (!currentDealData) return;
 
-            const { arv, rehabCosts, grossProfit } = currentDealData;
+            const { arv, rehabCosts } = currentDealData;
 
-            getById('what-if-arv-base').textContent = currencyFormatter(arv);
-            getById('what-if-rehab-base').textContent = currencyFormatter(rehabCosts);
-            getById('what-if-profit-base').textContent = currencyFormatter(grossProfit);
-
-            const arvLow = arv * 0.95;
-            const arvHigh = arv * 1.05;
-            const rehabLow = rehabCosts * 0.90;
-            const rehabMid = rehabCosts;
-            const rehabHigh = rehabCosts * 1.10;
-            const rehabOver = rehabCosts * 1.20;
+            // Base profit for comparison
+            const baseDeal = calculateDeal(currentDealData);
+            const baseProfit = baseDeal.grossProfit;
+            getById('what-if-profit-base').textContent = currencyFormatter(baseProfit);
             
-            // Update table headers
-            getById('what-if-arv-low').textContent = `ARV -5% (${currencyFormatter(arvLow)})`;
-            getById('what-if-arv-mid').textContent = `Target ARV (${currencyFormatter(arv)})`;
-            getById('what-if-arv-high').textContent = `ARV +5% (${currencyFormatter(arvHigh)})`;
+            // Define scenarios
+            const arvScenarios = [arv * 1.05, arv, arv * 0.95];
+            const rehabScenarios = [rehabCosts * 0.90, rehabCosts, rehabCosts * 1.10, rehabCosts * 1.20];
             
-            const tableBody = getById('what-if-table-body');
-            tableBody.innerHTML = '';
-            
-            const scenarios = [
-                { label: `Rehab -10% (${currencyFormatter(rehabLow)})`, cost: rehabLow },
-                { label: `Target Rehab (${currencyFormatter(rehabMid)})`, cost: rehabMid, isBold: true },
-                { label: `Rehab +10% (${currencyFormatter(rehabHigh)})`, cost: rehabHigh },
-                { label: `Rehab +20% (${currencyFormatter(rehabOver)})`, cost: rehabOver },
+            // Get IDs for the table cells
+            const cellIds = [
+                ['what-if-arv-high-rehab-low', 'what-if-arv-high-rehab-mid', 'what-if-arv-high-rehab-high', 'what-if-arv-high-rehab-over'],
+                ['what-if-arv-mid-rehab-low', 'what-if-profit-base', 'what-if-arv-mid-rehab-high', 'what-if-arv-mid-rehab-over'],
+                ['what-if-arv-low-rehab-low', 'what-if-arv-low-rehab-mid', 'what-if-arv-low-rehab-high', 'what-if-arv-low-rehab-over']
             ];
 
-            const arvScenarios = [arvLow, arv, arvHigh];
+            // Populate table
+            arvScenarios.forEach((currentArv, i) => {
+                rehabScenarios.forEach((currentRehab, j) => {
+                    // Skip the base case, it's already set
+                    if (i === 1 && j === 1) return; 
 
-            scenarios.forEach(scenario => {
-                const row = document.createElement('tr');
-                row.className = scenario.isBold ? 'font-bold bg-gray-900' : '';
-                
-                let rowHtml = `<td class="p-3">${scenario.label}</td>`;
-                
-                arvScenarios.forEach(arvScenario => {
-                    const inputs = { ...currentDealData, arv: arvScenario, rehabCosts: scenario.cost };
-                    const result = calculateDeal(inputs);
-                    
-                    const profitClass = result.grossProfit >= 0 ? 'profit' : 'loss';
-                    
-                    rowHtml += `
-                        <td class="p-3 text-center">
-                            <span class="${profitClass}">${currencyFormatter(result.grossProfit)}</span>
-                            <br>
-                            <span class="text-sm ${profitClass} opacity-80">(${percentFormatter(result.roi)})</span>
-                        </td>
-                    `;
+                    const tempInputs = { ...currentDealData, arv: currentArv, rehabCosts: currentRehab };
+                    const scenarioDeal = calculateDeal(tempInputs);
+                    const cell = getById(cellIds[i][j]);
+                    cell.textContent = currencyFormatter(scenarioDeal.grossProfit);
+                    cell.className = `p-3 border border-gray-700 text-center ${scenarioDeal.grossProfit >= 0 ? 'profit' : 'loss'}`;
                 });
-                
-                row.innerHTML = rowHtml;
-                tableBody.appendChild(row);
             });
         }
 
@@ -1939,7 +2134,7 @@
             getById('selling-costs-flat').value = new Intl.NumberFormat('en-US').format(deal.sellingCostsFlat);
 
             // Re-calculate and display
-            calculateDeal(deal);
+            displayDealResults(calculateDeal(deal));
             
             // Switch to main tab
             showTab('deal-calculator');
@@ -2087,7 +2282,7 @@
                 spinner.style.display = 'none';
                 content.style.display = 'block';
                 if (result.error) {
-                    content.textContent = result.error;
+                    content.textContent = result.error.message;
                 } else {
                     content.textContent = result.text;
                 }
@@ -2179,7 +2374,7 @@
 
                 const query = `${status} home comps near ${address} within a ${radius} mile radius. ${status === 'Sold' ? `Sold in the last ${soldSince}.` : ''}`;
                 const prompt = `You are a real estate comping expert. Find ${status} comparable properties for ${address} within a ${radius} mile radius. ${status === 'Sold' ? `Must be sold in the last ${soldSince}.` : ''}
-                Return a JSON object with a single key "comps", which is an array. For each comp, include "address", "beds", "baths", "sqft", and "salePrice".
+                Please return a JSON object with a single key "comps", which is an array. For each comp, include "address", "beds", "baths", "sqft", and "salePrice".
                 
                 Example:
                 {
@@ -2190,7 +2385,7 @@
                 }
                 
                 If you cannot find at least 3 comps, return { "comps": [] }.
-                YOU MUST return ONLY the JSON object and no other text.`;
+                Please return ONLY the JSON object and no other text.`;
 
                 const result = await callGeminiAPI(query, prompt, null, true, 2);
                 
@@ -2470,5 +2665,4 @@
         });
     </script>
 </html>
-
 
